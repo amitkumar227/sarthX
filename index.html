@@ -137,6 +137,32 @@
                 </button>
             </div>
 
+            <!-- Bhashini AI Controls Bar: Multi-Language Selector & Voice Indicator -->
+            <div class="bhashini-assistant-top-bar">
+                <div class="bhashini-lang-picker-box">
+                    <i class="fa-solid fa-language" style="color: var(--primary);"></i>
+                    <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">Language:</span>
+                    <select id="bhashiniLangSelect" class="bhashini-lang-select" onchange="onBhashiniLangChange(this.value)">
+                        <option value="en">English (English)</option>
+                        <option value="hi" selected>हिन्दी (Hindi)</option>
+                        <option value="bn">বাংলা (Bengali)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                        <option value="ml">മലയാളം (Malayalam)</option>
+                        <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                        <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                        <option value="as">অসমীয়া (Assamese)</option>
+                        <option value="ur">اردو (Urdu)</option>
+                    </select>
+                </div>
+                <div style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">
+                    <i class="fa-solid fa-headset" style="color: var(--primary);"></i> 13 Official Indian Languages Voice & NLP Ready
+                </div>
+            </div>
+
             <div class="assistant-input-group">
                 <input type="text" id="assistantInput" class="assistant-input" data-i18n-placeholder="sahayak_placeholder" placeholder="Type or speak your need (e.g., I am a small farmer looking for loan or insurance)...">
                 
@@ -150,7 +176,12 @@
                 </button>
             </div>
 
-            <div id="sahayakStatus" class="voice-status-bar" style="justify-content: flex-start;"></div>
+            <!-- Bhashini Dynamic Quick Prompts in Chosen Language -->
+            <div class="bhashini-quick-prompts" id="bhashiniQuickPrompts">
+                <!-- Injected via JavaScript based on selected language -->
+            </div>
+
+            <div id="sahayakStatus" class="voice-status-bar" style="justify-content: flex-start; margin-top: 10px;"></div>
 
             <!-- Dynamic AI Results Preview with Direct Apply Links -->
             <div id="sahayakResultsContainer" style="display: none; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color);">
@@ -265,10 +296,15 @@
             <h4 class="modal-section-title"><i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> Application Process</h4>
             <p id="modalAppProcess" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;"></p>
 
-            <a href="#" target="_blank" rel="noopener noreferrer" class="modal-action-btn" id="modalApplyBtn">
-                <span>Direct Apply on Official Government Portal</span>
-                <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left: 8px;"></i>
-            </a>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button type="button" id="modalAutoFillBtn" class="btn-auto-fill-gov" style="flex: 1.4; padding: 14px; border-radius: var(--radius-pill); font-size: 0.95rem;">
+                    <i class="fa-solid fa-file-signature"></i> Auto-Fill & Apply (Gov Bridge)
+                </button>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="check-details-btn" id="modalApplyBtn" style="flex: 1; padding: 14px; border-radius: var(--radius-pill); display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span>Direct Official Portal</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -410,7 +446,7 @@
                 }).join('');
             }
 
-            // Render Featured Schemes with Direct Apply Links
+            // Render Featured Schemes with Visual Banners and Gov Bridge Auto-Fill
             const featuredGrid = document.getElementById('featuredSchemesGrid');
             if (featuredGrid && window.SCHEMES_DATABASE) {
                 const featured = window.SCHEMES_DATABASE.slice(0, 6);
@@ -419,29 +455,28 @@
                 
                 featuredGrid.innerHTML = featured.map(scheme => {
                     const applyLink = scheme.directApplyUrl || scheme.officialUrl;
-                    const catName = window.t ? window.t('cat_' + scheme.category) : scheme.categoryName;
+                    const bannerHtml = window.SarthXGovBridge ? SarthXGovBridge.getSchemeVisualBanner(scheme) : '';
                     return `
-                        <div class="scheme-card">
+                        <div class="scheme-card animated-card">
                             <div>
-                                <div class="card-top">
-                                    <span class="scheme-badge ${scheme.badgeClass}">${catName}</span>
-                                    <span style="font-size: 0.75rem; color: #9ca3af;"><i class="fa-solid fa-location-dot"></i> ${scheme.level}</span>
-                                </div>
-                                <div class="scheme-card-body">
-                                    <h3>${scheme.title}</h3>
-                                    <p>${scheme.brief}</p>
+                                ${bannerHtml}
+                                <div class="scheme-card-body" style="padding: 16px 18px 0 18px;">
+                                    <h3 style="font-size: 1.15rem; margin-top: 4px;">${scheme.title}</h3>
+                                    <p style="font-size: 0.86rem;">${scheme.brief}</p>
                                 </div>
                             </div>
-                            <div class="card-footer">
+                            <div class="card-footer" style="margin: 14px 18px 18px 18px;">
                                 <div class="benefit-row">
-                                    <span class="benefit-tag">${scheme.benefit}</span>
+                                    <span class="benefit-tag" style="font-size: 0.85rem;">${scheme.benefit}</span>
                                 </div>
                                 <div class="card-actions-group">
                                     <button class="check-details-btn" onclick="openSchemeModal('${scheme.id}')">
                                         <i class="fa-solid fa-circle-info"></i> ${detailsLabel}
                                     </button>
-                                    <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="direct-apply-btn">
-                                        <span>${applyLabel}</span>
+                                    <button class="btn-auto-fill-gov" onclick="SarthXGovBridge.openGovModal('${scheme.id}')" title="Auto-Fill & Apply with SarthX Bridge">
+                                        <i class="fa-solid fa-bolt"></i> Auto-Fill
+                                    </button>
+                                    <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="check-details-btn" style="flex: 0.6; display: flex; align-items: center; justify-content: center;" title="Open Official Portal">
                                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                     </a>
                                 </div>
@@ -460,7 +495,62 @@
                 });
             }
 
+            // Initialize Bhashini Assistant Language & Quick Prompts
+            const savedBhashiniLang = localStorage.getItem('sarthx_bhashini_lang') || 'hi';
+            const bhashiniSelect = document.getElementById('bhashiniLangSelect');
+            if (bhashiniSelect) bhashiniSelect.value = savedBhashiniLang;
+            onBhashiniLangChange(savedBhashiniLang);
+
             setupVoiceControls();
+        }
+
+        // Bhashini AI Multi-Language Switching & Quick Prompt Handler
+        function onBhashiniLangChange(lang) {
+            if (window.bhashini) {
+                window.bhashini.setLanguage(lang);
+            }
+            renderBhashiniQuickPrompts(lang);
+            updateSahayakPlaceholder(lang);
+        }
+
+        function renderBhashiniQuickPrompts(lang) {
+            const container = document.getElementById('bhashiniQuickPrompts');
+            if (!container || !window.bhashini) return;
+            const prompts = window.bhashini.getQuickPrompts(lang);
+            container.innerHTML = prompts.map(p => `
+                <span class="quick-prompt-pill" onclick="applyQuickPrompt('${p.replace(/'/g, "\\'")}')">
+                    <i class="fa-solid fa-sparkles" style="color: var(--primary);"></i> ${p}
+                </span>
+            `).join('');
+        }
+
+        function applyQuickPrompt(promptText) {
+            const input = document.getElementById('assistantInput');
+            if (input) {
+                input.value = promptText;
+                executeSahayakQuery();
+            }
+        }
+
+        function updateSahayakPlaceholder(lang) {
+            const input = document.getElementById('assistantInput');
+            if (!input) return;
+            const placeholders = {
+                en: "Type or speak your need (e.g., I am a small farmer looking for loan or insurance)...",
+                hi: "अपनी आवश्यकता लिखें या बोलें (उदा. मैं एक किसान हूँ और फसल बीमा चाहिए)...",
+                bn: "আপনার প্রয়োজন লিখুন বা বলুন (যেমন: আমি একজন কৃষক, ফসল বীমা প্রয়োজন)...",
+                mr: "तुमची गरज टाईप करा किंवा बोला (उदा. मी शेतकरी आहे, मला पीक विमा हवा आहे)...",
+                te: "మీ అవసరాన్ని టైప్ చేయండి లేదా మాట్లాడండి (ఉదా: నేను రైతును, పంట బీమా కావాలి)...",
+                ta: "உங்கள் தேவையை தட்டச்சு செய்யவும் அல்லது பேசவும் (எ.கா: நான் ஒரு விவசாயி)...",
+                gu: "તમારી જરૂરિયાત લખો અથવા બોલો (દા.ત. હું ખેડૂત છું, પાક વીમો જોઈએ છે)...",
+                kn: "ನಿಮ್ಮ ಅಗತ್ಯವನ್ನು ಟೈಪ್ ಮಾಡಿ ಅಥವಾ ಮಾತನಾಡಿ (ಉದಾ: ನಾನು ರೈತ, ಬೆಳೆ ವಿಮೆ ಬೇಕು)...",
+                ml: "നിങ്ങളുടെ ആവശ്യം ടൈപ്പ് ചെയ്യുകയോ സംസാരിക്കുകയോ ചെയ്യുക...",
+                pa: "ਆਪਣੀ ਲੋੜ ਟਾਈਪ ਕਰੋ ਜਾਂ ਬੋਲੋ (ਜਿਵੇਂ: ਮੈਂ ਕਿਸਾਨ ਹਾਂ, ਫਸਲ ਬੀਮਾ ਚਾਹੀਦਾ ਹੈ)...",
+                or: "ଆପଣଙ୍କର ଆବଶ୍ୟକତା ଲେଖନ୍ତୁ କିମ୍ବା କୁହନ୍ତୁ...",
+                as: "আপোনাৰ প্ৰয়োজন লিখক বা কওক (যেনে: মই এজন কৃষক, শস্য বীমা লাগে)...",
+                ur: "اپنی ضرورت ٹائپ کریں یا بولیں (مثلاً: میں ایک کسان ہوں اور فصل انشورنس چاہئے)..."
+            };
+            input.placeholder = placeholders[lang] || placeholders.en;
         }
 
         // Re-render dynamic components on language change
@@ -488,7 +578,8 @@
 
             if (heroMicBtn && window.bhashini) {
                 heroMicBtn.addEventListener('click', () => {
-                    const langCode = document.getElementById('languageSelect').value + '-IN';
+                    const heroLang = document.getElementById('languageSelect') ? document.getElementById('languageSelect').value : 'en';
+                    const langCode = window.bhashini.getSpeechLangCode(heroLang);
                     window.bhashini.startVoiceRecognition({
                         lang: langCode,
                         onStart: () => {
@@ -517,12 +608,13 @@
 
             if (asstMicBtn && window.bhashini) {
                 asstMicBtn.addEventListener('click', () => {
-                    const langCode = document.getElementById('languageSelect').value + '-IN';
+                    const bhashiniLang = document.getElementById('bhashiniLangSelect') ? document.getElementById('bhashiniLangSelect').value : 'hi';
+                    const langCode = window.bhashini.getSpeechLangCode(bhashiniLang);
                     window.bhashini.startVoiceRecognition({
                         lang: langCode,
                         onStart: () => {
                             asstMicBtn.classList.add('listening');
-                            asstStatus.innerHTML = '<i class="fa-solid fa-circle-dot fa-beat"></i> Listening to your requirement...';
+                            asstStatus.innerHTML = '<i class="fa-solid fa-circle-dot fa-beat"></i> Listening in your language...';
                         },
                         onResult: (res) => {
                             asstInput.value = res.finalText || res.interimText;
@@ -547,10 +639,12 @@
             const query = document.getElementById('assistantInput').value.trim();
             if (!query) return;
 
+            const bhashiniLang = document.getElementById('bhashiniLangSelect') ? document.getElementById('bhashiniLangSelect').value : 'hi';
             const parsed = window.bhashini.parseCitizenQuery(query);
             const container = document.getElementById('sahayakResultsContainer');
             const grid = document.getElementById('sahayakCardsGrid');
             const viewAll = document.getElementById('sahayakViewAllLink');
+            const statusEl = document.getElementById('sahayakStatus');
 
             let matched = [];
             if (parsed.targetCategory) {
@@ -569,31 +663,46 @@
                 matched = window.SCHEMES_DATABASE.slice(0, 3);
             }
 
+            // Generate localized assistant response and speak it
+            if (window.bhashini && window.bhashini.generateAssistantResponse) {
+                const responseText = window.bhashini.generateAssistantResponse(parsed, matched.length, bhashiniLang);
+                if (statusEl) {
+                    statusEl.innerHTML = `
+                        <div style="background: rgba(5, 150, 105, 0.08); border: 1px solid rgba(5, 150, 105, 0.3); border-radius: 8px; padding: 10px 14px; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                            <span style="font-size: 0.88rem; color: var(--text-main);"><i class="fa-solid fa-sparkles" style="color: var(--primary);"></i> ${responseText}</span>
+                            <button type="button" onclick="window.bhashini.speakText('${responseText.replace(/'/g, "\\'")}', '${bhashiniLang}')" style="background: var(--primary); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; flex-shrink: 0;" title="Listen">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                        </div>
+                    `;
+                }
+                window.bhashini.speakText(responseText, bhashiniLang);
+            }
+
             const detailsLabel = window.t ? window.t('btn_check_details') : 'Details';
-            const applyLabel = window.t ? window.t('btn_direct_apply') : 'Direct Apply';
 
             grid.innerHTML = matched.slice(0, 4).map(scheme => {
                 const applyLink = scheme.directApplyUrl || scheme.officialUrl;
-                const catName = window.t ? window.t('cat_' + scheme.category) : scheme.categoryName;
+                const bannerHtml = window.SarthXGovBridge ? SarthXGovBridge.getSchemeVisualBanner(scheme) : '';
                 return `
-                    <div class="scheme-card" style="background: var(--bg-dark);">
+                    <div class="scheme-card animated-card" style="background: var(--bg-dark);">
                         <div>
-                            <div class="card-top">
-                                <span class="scheme-badge ${scheme.badgeClass}">${catName}</span>
-                            </div>
-                            <div class="scheme-card-body">
-                                <h3 style="font-size: 1.1rem;">${scheme.title}</h3>
+                            ${bannerHtml}
+                            <div class="scheme-card-body" style="padding: 16px 18px 0 18px;">
+                                <h3 style="font-size: 1.1rem; margin-top: 4px;">${scheme.title}</h3>
                                 <p style="font-size: 0.85rem;">${scheme.brief}</p>
                             </div>
                         </div>
-                        <div class="card-footer">
+                        <div class="card-footer" style="margin: 14px 18px 18px 18px;">
                             <div class="benefit-row">
                                 <span class="benefit-tag" style="font-size: 0.85rem;">${scheme.benefit}</span>
                             </div>
                             <div class="card-actions-group">
                                 <button class="check-details-btn" onclick="openSchemeModal('${scheme.id}')">${detailsLabel}</button>
-                                <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="direct-apply-btn">
-                                    <span>${applyLabel}</span>
+                                <button class="btn-auto-fill-gov" onclick="SarthXGovBridge.openGovModal('${scheme.id}')" title="Auto-Fill & Apply with SarthX Bridge">
+                                    <i class="fa-solid fa-bolt"></i> Auto-Fill
+                                </button>
+                                <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="check-details-btn" style="flex: 0.6; display: flex; align-items: center; justify-content: center;" title="Open Official Portal">
                                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                 </a>
                             </div>
@@ -621,6 +730,15 @@
             
             const applyLink = scheme.directApplyUrl || scheme.officialUrl;
             document.getElementById('modalApplyBtn').href = applyLink;
+            const autoFillBtn = document.getElementById('modalAutoFillBtn');
+            if (autoFillBtn) {
+                autoFillBtn.onclick = () => {
+                    closeSchemeModal();
+                    if (window.SarthXGovBridge) {
+                        window.SarthXGovBridge.openGovModal(scheme.id);
+                    }
+                };
+            }
 
             const docsList = document.getElementById('modalDocsList');
             docsList.innerHTML = scheme.documentsRequired.map(doc => `
@@ -629,9 +747,9 @@
 
             const ttsBtn = document.getElementById('modalTTSBtn');
             ttsBtn.onclick = () => {
-                const currentLang = document.getElementById('languageSelect').value;
+                const bhashiniLang = document.getElementById('bhashiniLangSelect') ? document.getElementById('bhashiniLangSelect').value : 'hi';
                 const speakText = `${scheme.title}. ${scheme.brief}. Key benefit is ${scheme.benefit}. Eligibility: ${scheme.eligibilitySummary}`;
-                window.bhashini.speakText(speakText, currentLang);
+                window.bhashini.speakText(speakText, bhashiniLang);
             };
 
             document.getElementById('schemeModal').classList.add('active');

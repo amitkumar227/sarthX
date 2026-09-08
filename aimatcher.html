@@ -461,10 +461,15 @@
             <h4 class="modal-section-title"><i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> Application Process</h4>
             <p id="modalAppProcess" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;"></p>
 
-            <a href="#" target="_blank" rel="noopener noreferrer" class="modal-action-btn" id="modalApplyBtn">
-                <span>Direct Apply on Official Government Portal</span>
-                <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left: 8px;"></i>
-            </a>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button type="button" id="modalGovAutoFillBtn" class="btn-auto-fill-gov" style="flex: 1.4; padding: 14px; border-radius: var(--radius-pill); font-size: 0.95rem;">
+                    <i class="fa-solid fa-file-signature"></i> Auto-Fill & Apply (Gov Bridge)
+                </button>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="check-details-btn" id="modalApplyBtn" style="flex: 1; padding: 14px; border-radius: var(--radius-pill); display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span>Direct Official Portal</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -690,34 +695,40 @@
             }
 
             const detailsLabel = window.t ? window.t('btn_check_details') : 'Details';
-            const applyLabel = window.t ? window.t('btn_direct_apply') : 'Direct Apply';
             const matchLabel = isEligible ? '100% Match' : 'Likely Eligible';
 
             return list.map(scheme => {
                 const applyLink = scheme.directApplyUrl || scheme.officialUrl;
-                const catName = window.t ? window.t('cat_' + scheme.category) : scheme.categoryName;
+                const bannerHtml = window.SarthXGovBridge ? SarthXGovBridge.getSchemeVisualBanner(scheme) : '';
                 return `
-                    <div class="scheme-card" style="background: var(--bg-dark); border-color: ${isEligible ? 'rgba(16,185,129,0.3)' : 'var(--border-color)'};">
+                    <div class="scheme-card animated-card" style="background: var(--bg-dark); border-color: ${isEligible ? 'rgba(16,185,129,0.35)' : 'var(--border-color)'};">
                         <div>
-                            <div class="card-top">
-                                <span class="scheme-badge ${scheme.badgeClass}">${catName}</span>
-                                <span style="font-size: 0.75rem; color: ${isEligible ? 'var(--primary)' : '#f59e0b'}; font-weight: 700;">
-                                    <i class="fa-solid ${isEligible ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i> ${matchLabel}
-                                </span>
-                            </div>
-                            <div class="scheme-card-body">
-                                <h3>${scheme.title}</h3>
-                                <p>${scheme.brief}</p>
+                            ${bannerHtml}
+                            <div style="padding: 14px 18px 0 18px;">
+                                <div class="card-top" style="margin-bottom: 8px;">
+                                    <span class="scheme-badge ${scheme.badgeClass}">${scheme.categoryName}</span>
+                                    <span style="font-size: 0.78rem; color: ${isEligible ? 'var(--primary)' : '#f59e0b'}; font-weight: 700;">
+                                        <i class="fa-solid ${isEligible ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i> ${matchLabel}
+                                    </span>
+                                </div>
+                                <div class="scheme-card-body">
+                                    <h3 style="font-size: 1.12rem;">${scheme.title}</h3>
+                                    <p style="font-size: 0.85rem;">${scheme.brief}</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-footer">
+                        <div class="card-footer" style="margin: 14px 18px 18px 18px;">
                             <div class="benefit-row">
-                                <span class="benefit-tag">${scheme.benefit}</span>
+                                <span class="benefit-tag" style="font-size: 0.85rem;">${scheme.benefit}</span>
                             </div>
                             <div class="card-actions-group">
-                                <button class="check-details-btn" onclick="openSchemeModal('${scheme.id}')">${detailsLabel}</button>
-                                <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="direct-apply-btn">
-                                    <span>${applyLabel}</span>
+                                <button class="check-details-btn" onclick="openSchemeModal('${scheme.id}')">
+                                    <i class="fa-solid fa-circle-info"></i> ${detailsLabel}
+                                </button>
+                                <button class="btn-auto-fill-gov" onclick="SarthXGovBridge.openGovModal('${scheme.id}')" title="Auto-Fill & Apply with SarthX Bridge">
+                                    <i class="fa-solid fa-bolt"></i> Auto-Fill
+                                </button>
+                                <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="check-details-btn" style="flex: 0.6; display: flex; align-items: center; justify-content: center;" title="Open Official Portal">
                                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                 </a>
                             </div>
@@ -742,6 +753,15 @@
             
             const applyLink = scheme.directApplyUrl || scheme.officialUrl;
             document.getElementById('modalApplyBtn').href = applyLink;
+            const govBtn = document.getElementById('modalGovAutoFillBtn');
+            if (govBtn) {
+                govBtn.onclick = () => {
+                    closeSchemeModal();
+                    if (window.SarthXGovBridge) {
+                        window.SarthXGovBridge.openGovModal(scheme.id);
+                    }
+                };
+            }
 
             const docsList = document.getElementById('modalDocsList');
             docsList.innerHTML = scheme.documentsRequired.map(doc => `

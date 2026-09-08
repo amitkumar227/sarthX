@@ -14,21 +14,59 @@ class BhashiniService {
             { code: 'en', name: 'English', native: 'English', bhashiniCode: 'en' },
             { code: 'hi', name: 'Hindi', native: 'हिन्दी', bhashiniCode: 'hi' },
             { code: 'bn', name: 'Bengali', native: 'বাংলা', bhashiniCode: 'bn' },
-            { code: 'te', name: 'Telugu', native: 'తెలుగు', bhashiniCode: 'te' },
             { code: 'mr', name: 'Marathi', native: 'मराठी', bhashiniCode: 'mr' },
+            { code: 'te', name: 'Telugu', native: 'తెలుగు', bhashiniCode: 'te' },
             { code: 'ta', name: 'Tamil', native: 'தமிழ்', bhashiniCode: 'ta' },
             { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી', bhashiniCode: 'gu' },
             { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ', bhashiniCode: 'kn' },
             { code: 'ml', name: 'Malayalam', native: 'മലയാളം', bhashiniCode: 'ml' },
             { code: 'pa', name: 'Punjabi', native: 'ਪੰਜਾਬੀ', bhashiniCode: 'pa' },
             { code: 'or', name: 'Odia', native: 'ଓଡ଼ିଆ', bhashiniCode: 'or' },
+            { code: 'as', name: 'Assamese', native: 'অসমীয়া', bhashiniCode: 'as' },
             { code: 'ur', name: 'Urdu', native: 'اردو', bhashiniCode: 'ur' }
         ];
 
-        this.currentLang = 'en';
+        try {
+            const savedLang = localStorage.getItem('sarthx_bhashini_lang') || localStorage.getItem('sarthx_language') || 'hi';
+            this.currentLang = savedLang;
+        } catch (e) {
+            this.currentLang = 'hi';
+        }
+
         this.speechRecognition = null;
         this.isListening = false;
         this.initSpeechRecognition();
+    }
+
+    setLanguage(lang) {
+        if (this.languages.some(l => l.code === lang)) {
+            this.currentLang = lang;
+            try {
+                localStorage.setItem('sarthx_bhashini_lang', lang);
+            } catch (e) {}
+            window.dispatchEvent(new CustomEvent('bhashini_language_changed', { detail: { lang } }));
+            return true;
+        }
+        return false;
+    }
+
+    getSpeechLangCode(lang) {
+        const langCodeMap = {
+            'en': 'en-IN',
+            'hi': 'hi-IN',
+            'bn': 'bn-IN',
+            'te': 'te-IN',
+            'mr': 'mr-IN',
+            'ta': 'ta-IN',
+            'gu': 'gu-IN',
+            'kn': 'kn-IN',
+            'ml': 'ml-IN',
+            'pa': 'pa-IN',
+            'or': 'or-IN',
+            'as': 'as-IN',
+            'ur': 'ur-IN'
+        };
+        return langCodeMap[lang] || 'hi-IN';
     }
 
     loadConfig() {
@@ -515,9 +553,122 @@ class BhashiniService {
         }
         return text;
     }
+
+    /**
+     * Multilingual quick prompts for instant 1-tap voice/text testing
+     */
+    getQuickPrompts(lang) {
+        const langCode = lang || this.currentLang || 'hi';
+        const prompts = {
+            en: [
+                { icon: "fa-seedling", text: "I am a small farmer looking for loan or PM-Kisan subsidy" },
+                { icon: "fa-graduation-cap", text: "I am a college student searching for scholarship" },
+                { icon: "fa-briefcase", text: "Need collateral-free business loan under Mudra" },
+                { icon: "fa-house", text: "Looking for PM Awas housing assistance" }
+            ],
+            hi: [
+                { icon: "fa-seedling", text: "मैं एक किसान हूँ और फसल बीमा या पीएम-किसान सहायता चाहिए" },
+                { icon: "fa-graduation-cap", text: "मैं एक छात्र हूँ मुझे स्कॉलरशिप या शिक्षा सहायता चाहिए" },
+                { icon: "fa-briefcase", text: "छोटा व्यापार शुरू करने के लिए मुद्रा लोन चाहिए" },
+                { icon: "fa-house", text: "पीएम आवास योजना में पक्का मकान सहायता चाहिए" }
+            ],
+            bn: [
+                { icon: "fa-seedling", text: "আমি একজন কৃষক, ফসল বীমা ও কিষাণ ক্রেডিট কার্ড চাই" },
+                { icon: "fa-graduation-cap", text: "আমি একজন ছাত্র, উচ্চশিক্ষার জন্য সরকারি স্কলারশিপ দরকার" },
+                { icon: "fa-briefcase", text: "ব্যবসার জন্য জামানতমুক্ত মুদ্রা ঋণ ও সরকারি অনুদান চাই" },
+                { icon: "fa-house", text: "প্রধানমন্ত্রী আবাস যোজনায় পাকা বাড়ি তৈরির সহায়তা চাই" }
+            ],
+            mr: [
+                { icon: "fa-seedling", text: "मी शेतकरी आहे, मला पीक विमा आणि कर्ज योजना हवी आहे" },
+                { icon: "fa-graduation-cap", text: "मी विद्यार्थी आहे, मला उच्च शिक्षणासाठी शिष्यवृत्ती हवी" },
+                { icon: "fa-briefcase", text: "नवीन व्यवसायासाठी मुद्रा कर्ज आणि सरकारी अनुदान हवे" },
+                { icon: "fa-house", text: "प्रधानमंत्री आवास योजनेअंतर्गत पक्के घर हवे" }
+            ],
+            te: [
+                { icon: "fa-seedling", text: "నేను రైతును, నాకు పంట బీమా మరియు పీఎం కిసాన్ కావాలి" },
+                { icon: "fa-graduation-cap", text: "నేను విద్యార్థిని, నాకు స్కాలర్‌షిప్ మరియు విద్యా సహాయం కావాలి" },
+                { icon: "fa-briefcase", text: "వ్యాపారం కోసం పూచీకత్తు లేని ముద్రా రుణం కావాలి" },
+                { icon: "fa-house", text: "పీఎం ఆవాస్ యోజన కింద పక్కా ఇల్లు కావాలి" }
+            ],
+            ta: [
+                { icon: "fa-seedling", text: "நான் ஒரு விவசாயி, எனக்கு பயிர் காப்பீடு மற்றும் கிசான் உதவி வேண்டும்" },
+                { icon: "fa-graduation-cap", text: "நான் ஒரு மாணவர், உயர்கல்வி உதவித்தொகை தேவை" },
+                { icon: "fa-briefcase", text: "சிறு தொழிலுக்கு முத்ரா கடன் மற்றும் மானியம் தேவை" },
+                { icon: "fa-house", text: "பிரதமர் ஆவாஸ் திட்டத்தில் சொந்த வீடு உதவி வேண்டும்" }
+            ],
+            gu: [
+                { icon: "fa-seedling", text: "હું ખેડૂત છું, પાક વીમો અને કિસાન ક્રેડિટ કાર્ડ જોઈએ છે" },
+                { icon: "fa-graduation-cap", text: "હું વિદ્યાર્થી છું, મને ઉચ્ચ અભ્યાસ માટે શિષ્યવૃત્તિ જોઈએ" },
+                { icon: "fa-briefcase", text: "વેપાર શરૂ કરવા મુદ્રા લોન અને સબસિડી જોઈએ" },
+                { icon: "fa-house", text: "પ્રધાનમંત્રી આવાસ યોજનામાં પાકું મકાન જોઈએ" }
+            ],
+            kn: [
+                { icon: "fa-seedling", text: "ನಾನು ರೈತ, ನನಗೆ ಬೆಳೆ ವಿಮೆ ಮತ್ತು ಕಿಸಾನ್ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಬೇಕು" },
+                { icon: "fa-graduation-cap", text: "ನಾನು ವಿದ್ಯಾರ್ಥಿ, ನನಗೆ ಉನ್ನತ ಶಿಕ್ಷಣಕ್ಕೆ ವಿದ್ಯಾರ್ಥಿವೇತನ ಬೇಕು" },
+                { icon: "fa-briefcase", text: "ಉದ್ಯಮಕ್ಕಾಗಿ ಮುದ್ರಾ ಸಾಲ ಮತ್ತು ಸಬ್ಸಿಡಿ ಬೇಕು" },
+                { icon: "fa-house", text: "ಪಿಎಂ ಆವಾಸ್ ಯೋಜನೆಯಲ್ಲಿ ಮನೆ ನಿರ್ಮಾಣ ಸಹಾಯ ಬೇಕು" }
+            ],
+            ml: [
+                { icon: "fa-seedling", text: "ഞാൻ കർഷകനാണ്, വിള ഇൻഷുറൻസും കിസാൻ സഹായവും വേണം" },
+                { icon: "fa-graduation-cap", text: "ഞാൻ വിദ്യാർത്ഥിയാണ്, സ്കോളർഷിപ്പും വിദ്യാഭ്യാസ വായ്പയും വേണം" },
+                { icon: "fa-briefcase", text: "ബിസിനസ്സിന് മുദ്ര വായ്പയും സബ്‌സിഡിയും വേണം" },
+                { icon: "fa-house", text: "പ്രധാനമന്ത്രി ആവാസ് പദ്ധതിയിൽ വീട് വേണം" }
+            ],
+            pa: [
+                { icon: "fa-seedling", text: "ਮੈਂ ਕਿਸਾਨ ਹਾਂ, ਮੈਨੂੰ ਫਸਲ ਬੀਮਾ ਅਤੇ ਪੀਐਮ ਕਿਸਾਨ ਸਹਾਇਤਾ ਚਾਹੀਦੀ ਹੈ" },
+                { icon: "fa-graduation-cap", text: "ਮੈਂ ਵਿਦਿਆਰਥੀ ਹਾਂ, ਮੈਨੂੰ ਉੱਚ ਸਿੱਖਿਆ ਲਈ ਵਜ਼ੀਫ਼ਾ ਚਾਹੀਦਾ ਹੈ" },
+                { icon: "fa-briefcase", text: "ਕਾਰੋਬਾਰ ਲਈ ਮੁਦਰਾ ਕਰਜ਼ਾ ਅਤੇ ਸਬਸਿਡੀ ਚਾਹੀਦੀ ਹੈ" },
+                { icon: "fa-house", text: "ਪੀਐਮ ਆਵਾਸ ਯੋਜਨਾ ਵਿੱਚ ਪੱਕਾ ਮਕਾਨ ਚਾਹੀਦਾ ਹੈ" }
+            ],
+            or: [
+                { icon: "fa-seedling", text: "ମୁଁ ଜଣେ କୃଷକ, ମୋତେ ଫସଲ ବୀମା ଏବଂ ପିଏମ କିଷାନ ସହାୟତା ଦରକାର" },
+                { icon: "fa-graduation-cap", text: "ମୁଁ ଜଣେ ଛାତ୍ର, ମୋତେ ଉଚ୍ଚଶିକ୍ଷା ପାଇଁ ବୃତ୍ତି ଦରକାର" },
+                { icon: "fa-briefcase", text: "ବ୍ୟବସାୟ ପାଇଁ ମୁଦ୍ରା ଋଣ ଏବଂ ସବସିଡି ଦରକାର" },
+                { icon: "fa-house", text: "ପିଏମ ଆବାସ ଯୋଜନାରେ ପକ୍କା ଘର ସହାୟତା ଦରକାର" }
+            ],
+            as: [
+                { icon: "fa-seedling", text: "মই এজন কৃষক, শস্য বীমা আৰু কিষাণ ক্ৰেডিট কাৰ্ড লাগে" },
+                { icon: "fa-graduation-cap", text: "মই এজন ছাত্ৰ, মোক উচ্চ শিক্ষাৰ বৃত্তি লাগে" },
+                { icon: "fa-briefcase", text: "ব্যৱসায়ৰ বাবে মুদ্ৰা ঋণ আৰু ৰাজসাহায্য লাগে" },
+                { icon: "fa-house", text: "প্ৰধানমন্ত্ৰী আৱাস যোজনাত ঘৰ নিৰ্মাণ সাহায্য লাগে" }
+            ],
+            ur: [
+                { icon: "fa-seedling", text: "میں ایک کسان ہوں، مجھے فصل بیمہ اور کسان کریڈٹ کارڈ چاہیے" },
+                { icon: "fa-graduation-cap", text: "میں ایک طالب علم ہوں، مجھے اعلیٰ تعلیم کے لیے وظیفہ چاہیے" },
+                { icon: "fa-briefcase", text: "کاروبار کے لیے مدرا قرض اور سبسڈی چاہیے" },
+                { icon: "fa-house", text: "پی ایم آواس یوجنا کے تحت مکان کی امداد چاہیے" }
+            ]
+        };
+        return prompts[langCode] || prompts['hi'] || prompts['en'];
+    }
+
+    /**
+     * Generate spoken & written assistant responses in the selected Indian language
+     */
+    generateAssistantResponse(parsedResult, matchCount, lang) {
+        const langCode = lang || this.currentLang || 'hi';
+        const responses = {
+            en: `Found ${matchCount} official welfare schemes matching your profile. You can review details or apply directly via SarthX Gov Bridge.`,
+            hi: `आपकी आवश्यकता के अनुसार ${matchCount} सरकारी कल्याणकारी योजनाएं मिली हैं। आप विवरण देख सकते हैं या सीधे आवेदन कर सकते हैं।`,
+            bn: `আপনার প্রোফাইল অনুযায়ী ${matchCount}টি সরকারি কল্যাণমূলক প্রকল্প পাওয়া গেছে। বিস্তারিত দেখুন অথবা সরাসরি আবেদন করুন।`,
+            mr: `तुमच्या गरजेनुसार ${matchCount} अधिकृत सरकारी योजना शोधल्या आहेत. तपशील तपासा किंवा थेट अर्ज करा.`,
+            te: `మీ ప్రొఫైల్ ఆధారంగా ${matchCount} అధికారిక ప్రభుత్వ సంక్షేమ పథకాలు కనుగొనబడ్డాయి. వివరాలు చూడండి లేదా దరఖాస్తు చేసుకోండి.`,
+            ta: `உங்கள் தேவைகளுக்கேற்ப ${matchCount} அரசு நலத்திட்டங்கள் கண்டறியப்பட்டுள்ளன. விவரங்களை சரிபார்க்கவும் அல்லது நேரடியாக விண்ணப்பிக்கவும்.`,
+            gu: `તમારી જરૂરિયાત અનુસાર ${matchCount} સરકારી કલ્યાણ યોજનાઓ મળી છે. વિગતો તપાસો અથવા સીધી અરજી કરો.`,
+            kn: `ನಿಮ್ಮ ಅಗತ್ಯಕ್ಕೆ ತಕ್ಕಂತೆ ${matchCount} ಅಧಿಕೃತ ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು ದೊರೆತಿವೆ. ವಿವರಗಳನ್ನು ನೋಡಿ ಅಥವಾ ನೇರವಾಗಿ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ.`,
+            ml: `നിങ്ങളുടെ ആവശ്യപ്രകാരം ${matchCount} സർക്കാർ ക്ഷേമപദ്ധതികൾ കണ്ടെത്തിയിട്ടുണ്ട്. വിശദാംശങ്ങൾ പരിശോധിക്കുകയോ അപേക്ഷിക്കുകയോ ചെയ്യാം.`,
+            pa: `ਤੁਹਾਡੀ ਲੋੜ ਅਨੁਸਾਰ ${matchCount} ਸਰਕਾਰੀ ਯੋਜਨਾਵਾਂ ਮਿਲੀਆਂ ਹਨ। ਵੇਰਵੇ ਦੇਖੋ ਜਾਂ ਸਿੱਧਾ ਅਪਲਾਈ ਕਰੋ।`,
+            or: `ଆପଣଙ୍କ ଆବଶ୍ୟକତା ଅନୁଯାୟୀ ${matchCount}ଟି ସରକାରୀ ଯୋଜନା ମିଳିଛି। ବିବରଣୀ ଦେଖନ୍ତୁ କିମ୍ବା ଆବେଦନ କରନ୍ତୁ।`,
+            as: `আপোনাৰ প্ৰয়োজন অনুসৰি ${matchCount}খন চৰকাৰী আঁচনি পোৱা গৈছে। সবিশেষ চাওক বা পোনপটীয়াকৈ আবেদন কৰক।`,
+            ur: `آپ کی ضرورت کے مطابق ${matchCount} سرکاری فلاحی اسکیمیں مل گئی ہیں۔ تفصیلات دیکھیں یا براہ راست درخواست دیں۔`
+        };
+
+        return responses[langCode] || responses['hi'] || responses['en'];
+    }
 }
 
 // Instantiate and expose globally
 if (typeof window !== 'undefined') {
     window.bhashini = new BhashiniService();
 }
+

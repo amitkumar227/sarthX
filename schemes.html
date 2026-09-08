@@ -364,34 +364,34 @@
             const detailsLabel = window.t ? window.t('btn_check_details') : 'Details';
             const applyLabel = window.t ? window.t('btn_direct_apply') : 'Direct Apply';
 
-            // Render Cards with BOTH Check Details and Direct Apply Buttons
+            // Render Cards with Visual Banners, Details, Auto-Fill, and Direct Portal Links
             filtered.forEach(scheme => {
                 const card = document.createElement('div');
-                card.className = 'scheme-card';
+                card.className = 'scheme-card animated-card';
                 const applyLink = scheme.directApplyUrl || scheme.officialUrl;
-                const catName = window.t ? window.t('cat_' + scheme.category) : scheme.categoryName;
+                const bannerHtml = window.SarthXGovBridge ? SarthXGovBridge.getSchemeVisualBanner(scheme) : '';
 
                 card.innerHTML = `
                     <div>
-                        <div class="card-top">
-                            <span class="scheme-badge ${scheme.badgeClass}">${catName}</span>
-                            <span style="font-size: 0.75rem; color: #9ca3af;"><i class="fa-solid fa-location-dot"></i> ${scheme.level}</span>
-                        </div>
-                        <div class="scheme-card-body">
-                            <h3>${scheme.title}</h3>
-                            <p>${scheme.brief}</p>
+                        ${bannerHtml}
+                        <div class="scheme-card-body" style="padding: 16px 18px 0 18px;">
+                            <h3 style="font-size: 1.15rem; margin-top: 4px;">${scheme.title}</h3>
+                            <p style="font-size: 0.86rem;">${scheme.brief}</p>
                         </div>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer" style="margin: 14px 18px 18px 18px;">
                         <div class="benefit-row">
-                            <span class="benefit-tag">${scheme.benefit}</span>
+                            <span class="benefit-tag" style="font-size: 0.85rem;">${scheme.benefit}</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot"></i> ${scheme.level}</span>
                         </div>
                         <div class="card-actions-group">
                             <button class="check-details-btn" onclick="openSchemeModal('${scheme.id}')">
                                 <i class="fa-solid fa-circle-info"></i> ${detailsLabel}
                             </button>
-                            <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="direct-apply-btn" title="Open official ${scheme.title} application form">
-                                <span>${applyLabel}</span>
+                            <button class="btn-auto-fill-gov" onclick="SarthXGovBridge.openGovModal('${scheme.id}')" title="Auto-Fill Government Form with SarthX Bridge">
+                                <i class="fa-solid fa-bolt"></i> Auto-Fill
+                            </button>
+                            <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="check-details-btn" style="flex: 0.6; display: flex; align-items: center; justify-content: center;" title="Open official ${scheme.title} application form">
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </a>
                         </div>

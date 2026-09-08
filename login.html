@@ -272,6 +272,25 @@
                     </div>
                 </div>
 
+                <!-- Quick Filter Tabs for Recommendations -->
+                <div class="recommendation-filter-pills" id="recFilterPills" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;">
+                    <button type="button" class="filter-pill-btn active" onclick="filterRecommendations('all', this)">
+                        <i class="fa-solid fa-list-check"></i> All Matches (<span id="countAllRecs">0</span>)
+                    </button>
+                    <button type="button" class="filter-pill-btn" onclick="filterRecommendations('top', this)">
+                        <i class="fa-solid fa-star"></i> Exceptional Matches (85%+)
+                    </button>
+                    <button type="button" class="filter-pill-btn" onclick="filterRecommendations('dbt', this)">
+                        <i class="fa-solid fa-money-bill-transfer"></i> Direct Cash (DBT)
+                    </button>
+                    <button type="button" class="filter-pill-btn" onclick="filterRecommendations('credit', this)">
+                        <i class="fa-solid fa-building-columns"></i> Subsidized Loans & MSME
+                    </button>
+                    <button type="button" class="filter-pill-btn" onclick="filterRecommendations('state', this)">
+                        <i class="fa-solid fa-location-dot"></i> State Specific
+                    </button>
+                </div>
+
                 <!-- Grid of matched schemes -->
                 <div class="schemes-grid" id="recommendedSchemesGrid">
                     <!-- Injected via JavaScript -->
@@ -495,56 +514,128 @@
             }
         }
 
+        let cachedScoredSchemes = [];
+
+        // Filter recommendations by pill type
+        function filterRecommendations(type, btn) {
+            if (btn) {
+                document.querySelectorAll('#recFilterPills .filter-pill-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+
+            const profile = SarthXGovBridge.getUserProfile();
+            let filtered = [...cachedScoredSchemes];
+
+            if (type === 'top') {
+                filtered = filtered.filter(item => item.score >= 85);
+            } else if (type === 'dbt') {
+                filtered = filtered.filter(item => 
+                    item.scheme.benefitType === 'Direct Cash Benefit' || 
+                    (item.scheme.benefit && item.scheme.benefit.toLowerCase().includes('dbt')) ||
+                    item.scheme.category === 'agriculture'
+                );
+            } else if (type === 'credit') {
+                filtered = filtered.filter(item => 
+                    item.scheme.category === 'business' || 
+                    item.scheme.category === 'financial' ||
+                    (item.scheme.benefit && item.scheme.benefit.toLowerCase().includes('loan'))
+                );
+            } else if (type === 'state') {
+                const userState = (profile && profile.state) ? profile.state.toLowerCase() : '';
+                filtered = filtered.filter(item => 
+                    item.scheme.level === 'State' || 
+                    (userState && (item.scheme.state || '').toLowerCase().includes(userState))
+                );
+            }
+
+            renderRecommendationCards(filtered);
+        }
+
         // Run Scheme Matching & Rank by Score
         function runSchemeMatching(profile) {
             const allSchemes = window.SCHEMES_DATABASE || [];
-            const scoredList = allSchemes.map(scheme => {
+            cachedScoredSchemes = allSchemes.map(scheme => {
                 const matchResult = SarthXGovBridge.calculateMatchScore(scheme, profile);
                 return {
                     scheme: scheme,
                     score: matchResult.score,
-                    reasons: matchResult.reasons
+                    matchGrade: matchResult.matchGrade,
+                    gradeClass: matchResult.gradeClass,
+                    reasons: matchResult.reasons,
+                    benefitHighlight: matchResult.benefitHighlight
                 };
             });
 
             // Sort descending by match score
-            scoredList.sort((a, b) => b.score - a.score);
+            cachedScoredSchemes.sort((a, b) => b.score - a.score);
 
+            const countEl = document.getElementById('countAllRecs');
+            if (countEl) countEl.textContent = cachedScoredSchemes.length;
+
+            renderRecommendationCards(cachedScoredSchemes);
+            document.getElementById('recommendationsSection').style.display = 'block';
+        }
+
+        function renderRecommendationCards(list) {
             const grid = document.getElementById('recommendedSchemesGrid');
             grid.innerHTML = '';
 
-            scoredList.forEach(item => {
+            if (list.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: var(--bg-card); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                        <i class="fa-solid fa-filter-circle-xmark" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 12px;"></i>
+                        <h4 style="font-size: 1.2rem; color: var(--text-main); margin-bottom: 6px;">No schemes match this specific filter</h4>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Try selecting 'All Matches' to view all eligible welfare schemes.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.forEach(item => {
                 const s = item.scheme;
                 const score = item.score;
-                const reasons = item.reasons;
-                const isHigh = score >= 80;
-                const scoreClass = isHigh ? 'match-high' : 'match-mid';
+                const reasons = item.reasons || [];
+                const bannerHtml = SarthXGovBridge.getSchemeVisualBanner(s);
                 const applyLink = s.directApplyUrl || s.officialUrl;
+                const docsList = (s.documentsRequired || []).slice(0, 3);
 
                 const card = document.createElement('div');
-                card.className = 'scheme-card';
+                card.className = 'scheme-card animated-card';
                 card.innerHTML = `
                     <div>
-                        <div class="card-top">
-                            <span class="scheme-badge ${s.badgeClass}">${s.categoryName}</span>
-                            <div class="match-score-pill ${scoreClass}">
-                                <i class="fa-solid fa-sparkles"></i> ${score}% Match
+                        ${bannerHtml}
+                        <div style="padding: 18px 20px 0 20px;">
+                            <div class="card-top" style="margin-bottom: 10px;">
+                                <span class="scheme-badge ${s.badgeClass}">${s.categoryName}</span>
+                                <div class="match-score-pill ${item.gradeClass || 'match-high'}">
+                                    <i class="fa-solid fa-sparkles"></i> ${score}% Match
+                                </div>
                             </div>
-                        </div>
-                        <div class="scheme-card-body">
-                            <h3>${s.title}</h3>
-                            <p>${s.brief}</p>
-                            
-                            <div class="match-reasons-list">
-                                ${reasons.map(r => `
-                                    <div class="match-reason-item">
-                                        <i class="fa-solid fa-circle-check"></i> <span>${r}</span>
+                            <div class="scheme-card-body">
+                                <h3>${s.title}</h3>
+                                <p>${s.brief}</p>
+                                
+                                <div class="match-reasons-list">
+                                    ${reasons.map(r => `
+                                        <div class="match-reason-item">
+                                            <i class="fa-solid ${r.icon || 'fa-circle-check'}"></i> <span>${r.text || r}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+
+                                ${docsList.length > 0 ? `
+                                    <div style="margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap;">
+                                        ${docsList.map(doc => `
+                                            <span style="font-size: 0.7rem; background: var(--bg-card-hover); border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 6px; color: var(--text-muted);">
+                                                <i class="fa-solid fa-file-check" style="color: var(--primary);"></i> ${doc}
+                                            </span>
+                                        `).join('')}
                                     </div>
-                                `).join('')}
+                                ` : ''}
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer" style="margin: 16px 20px 20px 20px;">
                         <div class="benefit-row">
                             <span class="benefit-tag">${s.benefit}</span>
                             <span style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot"></i> ${s.level}</span>
@@ -556,13 +647,14 @@
                             <button class="btn-auto-fill-gov" onclick="SarthXGovBridge.openGovModal('${s.id}')" title="Auto-Fill Government Form with SarthX Bridge">
                                 <i class="fa-solid fa-bolt"></i> Auto-Fill & Apply
                             </button>
+                            <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="check-details-btn" style="flex: 0.6; display: flex; align-items: center; justify-content: center;" title="Open Official Portal">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
                         </div>
                     </div>
                 `;
                 grid.appendChild(card);
             });
-
-            document.getElementById('recommendationsSection').style.display = 'block';
         }
 
         // Scheme Details Modal
