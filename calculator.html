@@ -18,7 +18,7 @@
        ============================================== -->
     <header class="site-header">
         <a href="index.html" class="nav-brand-pill">
-            <div class="brand-emblem"><i class="fa-solid fa-landmark-flag"></i></div>
+            <img src="img/sarthx-logo.png" alt="SarthX Logo" class="brand-logo-img">
             <div class="brand-text-box">
                 <span class="brand-subtitle">GovTech • MyScheme</span>
                 <span class="nav-brand">Sarth<span>X</span></span>
@@ -32,7 +32,8 @@
                 <li><a href="aimatcher.html" data-i18n="AI Matcher">AI Matcher</a></li>
                 <li><a href="calculator.html" class="active" data-i18n="Calculator">EMI Calculator</a></li>
                 <li><a href="ocr-scanner.html" data-i18n="OCR Scanner">OCR Scanner</a></li>
-                <li><a href="eligibility.html" data-i18n="Eligibility">Eligibility</a></li>
+                <li><a href="tracker.html" data-i18n="Tracker">Track Status</a></li>
+                <li><a href="login.html" data-i18n="Login">Login / Match</a></li>
             </ul>
 
             <div class="nav-actions">
@@ -43,7 +44,18 @@
                     <option value="mr">मराठी (Marathi)</option>
                     <option value="te">తెలుగు (Telugu)</option>
                     <option value="ta">தமிழ் (Tamil)</option>
+                    <option value="gu">ગુજરાતી (Gujarati)</option>
+                    <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                    <option value="ml">മലയാളം (Malayalam)</option>
+                    <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                    <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                    <option value="as">অসমীয়া (Assamese)</option>
+                    <option value="ur">اردو (Urdu)</option>
                 </select>
+
+                <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Light/Dark Theme" onclick="toggleTheme()">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
 
                 <button id="bhashiniSettingsBtn" class="nav-icon-btn" onclick="openBhashiniModal()" title="Bhashini AI Settings">
                     <i class="fa-solid fa-gear"></i>
@@ -57,14 +69,15 @@
     </header>
 
     <!-- Mobile Drawer -->
-    <div id="mobileDrawer" style="display: none; position: fixed; top: 80px; left: 20px; right: 20px; background: #171c19; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; z-index: 999; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
+    <div id="mobileDrawer" style="display: none; position: fixed; top: 80px; left: 20px; right: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; z-index: 999; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
         <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px;">
-            <li><a href="index.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Home</a></li>
-            <li><a href="schemes.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Schemes Directory</a></li>
-            <li><a href="aimatcher.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">AI Matcher</a></li>
+            <li><a href="index.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">Home</a></li>
+            <li><a href="schemes.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">Schemes Directory</a></li>
+            <li><a href="aimatcher.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">AI Matcher</a></li>
             <li><a href="calculator.html" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">EMI Calculator</a></li>
-            <li><a href="ocr-scanner.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">OCR Scanner</a></li>
-            <li><a href="eligibility.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Eligibility Matrix</a></li>
+            <li><a href="ocr-scanner.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">OCR Scanner</a></li>
+            <li><a href="tracker.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">Track Application</a></li>
+            <li><a href="login.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">Login / Match</a></li>
         </ul>
     </div>
 
@@ -182,11 +195,17 @@
                         </div>
                     </div>
 
-                    <!-- Direct Apply CTA -->
-                    <a href="https://www.jansamarth.in/" target="_blank" rel="noopener noreferrer" class="modal-action-btn" id="calcApplyBtn">
-                        <span data-i18n="calc_apply_cta">Apply Online on Official Portal</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left: 8px;"></i>
-                    </a>
+                    <!-- Direct Apply & Auto-Fill CTAs -->
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;">
+                        <button type="button" class="wizard-btn-next" onclick="openCurrentPresetGovModal()" style="width: 100%; border: none; justify-content: center; background: linear-gradient(135deg, #059669, #10b981);">
+                            <i class="fa-solid fa-file-signature"></i>
+                            <span>Smart Auto-Fill Application</span>
+                        </button>
+                        <a href="https://www.jansamarth.in/" target="_blank" rel="noopener noreferrer" class="modal-action-btn" id="calcApplyBtn">
+                            <span data-i18n="calc_apply_cta">Apply Online on Official Portal</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left: 8px;"></i>
+                        </a>
+                    </div>
                 </div>
 
             </div>
@@ -249,7 +268,7 @@
         <div class="footer-container">
             <div>
                 <a href="index.html" class="nav-brand-pill" style="display: inline-flex; margin-bottom: 16px;">
-                    <div class="brand-emblem"><i class="fa-solid fa-landmark-flag"></i></div>
+                    <img src="img/sarthx-logo.png" alt="SarthX Logo" class="brand-logo-img">
                     <span class="nav-brand">Sarth<span>X</span></span>
                 </a>
                 <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; max-width: 360px;">
@@ -265,6 +284,8 @@
                     <li><a href="aimatcher.html">AI Eligibility Matcher</a></li>
                     <li><a href="calculator.html">EMI Calculator</a></li>
                     <li><a href="ocr-scanner.html">OCR Document Scanner</a></li>
+                    <li><a href="tracker.html">Track Application</a></li>
+                    <li><a href="login.html">Login / Match</a></li>
                 </ul>
             </div>
 
@@ -297,9 +318,35 @@
     <script src="js/schemes-data.js"></script>
     <script src="js/translations.js"></script>
     <script src="js/bhashini.js"></script>
+    <script src="js/gov-bridge.js"></script>
     <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            const isDark = document.body.classList.contains('dark-theme');
+            localStorage.setItem('sarthx_theme', isDark ? 'dark' : 'light');
+            const icon = document.querySelector('#themeToggleBtn i');
+            if (icon) {
+                icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        }
+
+        if (localStorage.getItem('sarthx_theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+            const icon = document.querySelector('#themeToggleBtn i');
+            if (icon) icon.className = 'fa-solid fa-sun';
+        }
+
+        let currentActivePresetKey = 'mudra-kishore';
+
+        function openCurrentPresetGovModal() {
+            const p = SCHEME_PRESETS[currentActivePresetKey] || { name: 'PM Mudra Yojana' };
+            if (window.SarthXGovBridge) {
+                window.SarthXGovBridge.openGovModal(p.name);
+            }
+        }
+
         window.addEventListener('languageChanged', () => {
-            calculateLoan();
+            calculateEMI();
         });
 
         // Preset Definitions
@@ -466,6 +513,7 @@
 
         // Apply Preset
         function applyPreset(presetKey) {
+            currentActivePresetKey = presetKey;
             const p = SCHEME_PRESETS[presetKey];
             if (!p) return;
 

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Login & Scheme Matcher - SarthX MyScheme Portal</title>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ==============================================
+       DUAL-PILL NAVBAR WITH SARTHX OFFICIAL LOGO
+       ============================================== -->
+    <header class="site-header">
+        <a href="index.html" class="nav-brand-pill">
+            <img src="img/sarthx-logo.png" alt="SarthX Logo" class="brand-logo-img">
+            <div class="brand-text-box">
+                <span class="brand-subtitle">GovTech • MyScheme</span>
+                <span class="nav-brand">Sarth<span>X</span></span>
+            </div>
+        </a>
+
+        <nav class="nav-pill-right">
+            <ul class="nav-links">
+                <li><a href="index.html" data-i18n="Home">Home</a></li>
+                <li><a href="schemes.html" data-i18n="Schemes">Schemes</a></li>
+                <li><a href="aimatcher.html" data-i18n="AI Matcher">AI Matcher</a></li>
+                <li><a href="calculator.html" data-i18n="Calculator">EMI Calculator</a></li>
+                <li><a href="ocr-scanner.html" data-i18n="OCR Scanner">OCR Scanner</a></li>
+                <li><a href="tracker.html" data-i18n="Tracker">Track Application</a></li>
+                <li><a href="login.html" class="active" data-i18n="Login">Login / Match</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <select id="languageSelect" class="nav-lang-select" title="Choose Language">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="bn">বাংলা (Bengali)</option>
+                    <option value="mr">मराठी (Marathi)</option>
+                    <option value="te">తెలుగు (Telugu)</option>
+                    <option value="ta">தமிழ் (Tamil)</option>
+                    <option value="gu">ગુજરાતી (Gujarati)</option>
+                    <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                    <option value="ml">മലയാളം (Malayalam)</option>
+                    <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                    <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                    <option value="as">অসমীয়া (Assamese)</option>
+                    <option value="ur">اردو (Urdu)</option>
+                </select>
+
+                <button id="themeToggleBtn" class="theme-toggle-btn" title="Toggle Light/Dark Theme" onclick="toggleTheme()">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+
+                <button id="mobileMenuBtn" class="mobile-toggle" aria-label="Open navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div id="mobileDrawer" style="display: none; position: fixed; top: 80px; left: 20px; right: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; z-index: 999; box-shadow: var(--shadow-soft);">
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px;">
+            <li><a href="index.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">Home</a></li>
+            <li><a href="schemes.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">Schemes Directory</a></li>
+            <li><a href="aimatcher.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">AI Matcher</a></li>
+            <li><a href="calculator.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">EMI Calculator</a></li>
+            <li><a href="ocr-scanner.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">OCR Scanner</a></li>
+            <li><a href="tracker.html" style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">Track Application</a></li>
+            <li><a href="login.html" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">Login / Match</a></li>
+        </ul>
+    </div>
+
+    <!-- ==============================================
+       MAIN LOGIN & PROFILE ONBOARDING
+       ============================================== -->
+    <main class="login-page-wrapper">
+        <div class="section-container">
+            
+            <div class="login-hero-header">
+                <div class="login-brand-banner">
+                    <img src="img/sarthx-logo.png" alt="SarthX Official Logo" class="login-logo-img">
+                    <span class="hero-tag"><i class="fa-solid fa-user-shield"></i> Citizen Welfare Onboarding</span>
+                </div>
+                <h1 class="section-title" style="font-size: 2.4rem; margin-bottom: 10px;">Citizen Profile & Scheme Matcher</h1>
+                <p style="color: var(--text-muted); font-size: 1rem;">
+                    Enter your demographic and economic details to discover personalized government welfare schemes with instant compatibility match scoring.
+                </p>
+            </div>
+
+            <!-- Profile Summary (Visible when Logged In) -->
+            <div id="citizenProfileBar" class="citizen-profile-bar" style="display: none;">
+                <div class="citizen-info-summary">
+                    <div id="citizenAvatar" class="citizen-avatar">A</div>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <h3 id="citizenNameDisplay" style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);">Amit Kumar</h3>
+                            <span style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); color: var(--primary); padding: 2px 8px; border-radius: 10px; font-weight: 700;">
+                                <i class="fa-solid fa-badge-check"></i> Verified Profile
+                            </span>
+                        </div>
+                        <p id="citizenPhoneDisplay" style="font-size: 0.85rem; color: var(--text-muted);">+91 9876543210</p>
+                        <div class="citizen-badges">
+                            <span id="badgeCategory" class="citizen-badge-chip">Category: OBC</span>
+                            <span id="badgeState" class="citizen-badge-chip">State: Uttar Pradesh</span>
+                            <span id="badgeOccupation" class="citizen-badge-chip">Occupation: Artisan</span>
+                            <span id="badgeIncome" class="citizen-badge-chip">Income: ₹1.5L/yr</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="check-details-btn" onclick="editProfile()" style="padding: 10px 18px; border-radius: var(--radius-pill);">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit Profile
+                    </button>
+                    <button type="button" class="check-details-btn" onclick="logoutProfile()" style="padding: 10px 18px; border-radius: var(--radius-pill); color: #ef4444; border-color: rgba(239,68,68,0.3);">
+                        <i class="fa-solid fa-right-from-bracket"></i> Switch Citizen
+                    </button>
+                </div>
+            </div>
+
+            <!-- Customer Registration Form -->
+            <div id="loginCardWrapper" class="login-card">
+                <form id="customerLoginForm" onsubmit="handleCustomerLogin(event)">
+                    <div class="form-grid-2col">
+                        
+                        <!-- Full Name -->
+                        <div class="form-group">
+                            <label class="form-label" for="custName">
+                                <i class="fa-solid fa-user"></i> Full Name <span class="req">*</span>
+                            </label>
+                            <input type="text" id="custName" class="form-input" placeholder="e.g. Amit Kumar / Rajesh Patel" required>
+                        </div>
+
+                        <!-- Phone Number & Simulated OTP -->
+                        <div class="form-group">
+                            <label class="form-label" for="custPhone">
+                                <i class="fa-solid fa-phone"></i> 10-Digit Mobile Number <span class="req">*</span>
+                            </label>
+                            <div class="phone-otp-group">
+                                <input type="tel" id="custPhone" class="form-input" placeholder="e.g. 9876543210" pattern="[0-9]{10}" maxlength="10" required>
+                                <button type="button" class="btn-send-otp" id="sendOtpBtn" onclick="triggerOtpSimulation()">
+                                    <i class="fa-solid fa-key"></i> Verify OTP
+                                </button>
+                            </div>
+                            <div id="otpBox" class="otp-verification-box">
+                                <span style="font-size: 0.8rem; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px;">
+                                    <i class="fa-solid fa-mobile-screen"></i> OTP sent to mobile: <strong>2026</strong> (Auto-verified)
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Age -->
+                        <div class="form-group">
+                            <label class="form-label" for="custAge">
+                                <i class="fa-solid fa-calendar"></i> Age (in years) <span class="req">*</span>
+                            </label>
+                            <input type="number" id="custAge" class="form-input" min="16" max="99" value="25" required>
+                        </div>
+
+                        <!-- Social Category -->
+                        <div class="form-group">
+                            <label class="form-label" for="custCategory">
+                                <i class="fa-solid fa-users"></i> Social Category <span class="req">*</span>
+                            </label>
+                            <select id="custCategory" class="form-select" required>
+                                <option value="General">General / Open</option>
+                                <option value="OBC" selected>OBC (Other Backward Classes)</option>
+                                <option value="SC">SC (Scheduled Caste)</option>
+                                <option value="ST">ST (Scheduled Tribe)</option>
+                                <option value="EWS">EWS (Economically Weaker Section)</option>
+                                <option value="Minority">Minority Community</option>
+                            </select>
+                        </div>
+
+                        <!-- State -->
+                        <div class="form-group">
+                            <label class="form-label" for="custState">
+                                <i class="fa-solid fa-location-dot"></i> State / Union Territory <span class="req">*</span>
+                            </label>
+                            <select id="custState" class="form-select" required>
+                                <option value="All India">All India</option>
+                                <option value="Uttar Pradesh" selected>Uttar Pradesh</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Bihar">Bihar</option>
+                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="West Bengal">West Bengal</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Haryana">Haryana</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Odisha">Odisha</option>
+                                <option value="Assam">Assam</option>
+                            </select>
+                        </div>
+
+                        <!-- Annual Income -->
+                        <div class="form-group">
+                            <label class="form-label" for="custIncome">
+                                <i class="fa-solid fa-indian-rupee-sign"></i> Annual Family Income <span class="req">*</span>
+                            </label>
+                            <select id="custIncome" class="form-select" required>
+                                <option value="100000">Less than ₹1,00,000 (BPL / EWS)</option>
+                                <option value="200000" selected>₹1,00,000 - ₹2,50,000</option>
+                                <option value="400000">₹2,50,000 - ₹5,00,000</option>
+                                <option value="700000">₹5,00,000 - ₹8,00,000</option>
+                                <option value="1200000">Above ₹8,00,000</option>
+                            </select>
+                        </div>
+
+                        <!-- Occupation -->
+                        <div class="form-group">
+                            <label class="form-label" for="custOccupation">
+                                <i class="fa-solid fa-briefcase"></i> Primary Occupation <span class="req">*</span>
+                            </label>
+                            <select id="custOccupation" class="form-select" required>
+                                <option value="Farmer">Farmer / Kisan</option>
+                                <option value="Street Vendor">Street Vendor / Hawkers</option>
+                                <option value="Student">Student / Scholar</option>
+                                <option value="Artisan" selected>Artisan / Weaver / Craftsman (Vishwakarma)</option>
+                                <option value="Micro Entrepreneur">Micro Entrepreneur / Small Business (MSME)</option>
+                                <option value="Daily Wage Worker">Daily Wage / Construction Worker</option>
+                                <option value="Homemaker">Homemaker / Women SHG Member</option>
+                                <option value="Unemployed">Unemployed Youth / Job Seeker</option>
+                            </select>
+                        </div>
+
+                        <!-- Landholding -->
+                        <div class="form-group">
+                            <label class="form-label" for="custLand">
+                                <i class="fa-solid fa-seedling"></i> Agricultural Landholding
+                            </label>
+                            <select id="custLand" class="form-select">
+                                <option value="None">None (Landless / Urban Citizen)</option>
+                                <option value="Small">Small / Marginal (Under 2 Hectares)</option>
+                                <option value="Large">Large Farmer (Above 2 Hectares)</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn-login-submit">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Find Matching Schemes & Calculate Match Score</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ==============================================
+               RECOMMENDED SCHEMES SECTION (MATCH SCORE)
+               ============================================== -->
+            <section id="recommendationsSection" style="display: none; margin-top: 50px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+                    <div>
+                        <span class="hero-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--primary);"><i class="fa-solid fa-sparkles"></i> AI Powered Ranking</span>
+                        <h2 class="section-title" style="font-size: 2rem; margin-top: 6px;">Top Recommended Schemes For You</h2>
+                        <p style="color: var(--text-muted); font-size: 0.95rem;">Ranked by compatibility percentage with your verified profile.</p>
+                    </div>
+
+                    <div style="font-size: 0.9rem; font-weight: 700; color: var(--primary);">
+                        <i class="fa-solid fa-shield-halved"></i> Smart Gov Form Pre-Fill Enabled
+                    </div>
+                </div>
+
+                <!-- Grid of matched schemes -->
+                <div class="schemes-grid" id="recommendedSchemesGrid">
+                    <!-- Injected via JavaScript -->
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Scheme Details Modal -->
+    <div class="modal-overlay" id="schemeModal">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeSchemeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <span class="scheme-badge" id="modalBadge">Central</span>
+                <div class="modal-title-row">
+                    <h3 class="modal-title" id="modalTitle">Scheme Title</h3>
+                </div>
+            </div>
+            
+            <p class="modal-desc" id="modalDesc">Detailed description...</p>
+            
+            <div class="modal-info-grid">
+                <div class="info-box">
+                    <span>Key Benefit</span>
+                    <p id="modalBenefit">₹0</p>
+                </div>
+                <div class="info-box">
+                    <span>Scope & Jurisdiction</span>
+                    <p id="modalLevel">Central • All India</p>
+                </div>
+                <div class="info-box" style="grid-column: 1 / -1;">
+                    <span>Eligibility Criteria</span>
+                    <p id="modalEligibility" style="font-weight: 500; font-size: 0.9rem; line-height: 1.5;">Eligibility details...</p>
+                </div>
+            </div>
+
+            <h4 class="modal-section-title"><i class="fa-solid fa-file-shield" style="color: var(--primary);"></i> Documents Required</h4>
+            <ul class="modal-docs-list" id="modalDocsList"></ul>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button type="button" id="modalAutoFillBtn" class="btn-auto-fill-gov" style="flex: 1.4; padding: 14px; border-radius: var(--radius-pill);">
+                    <i class="fa-solid fa-file-signature"></i> Auto-Fill & Apply (Gov Bridge)
+                </button>
+                <a href="#" target="_blank" rel="noopener noreferrer" class="check-details-btn" id="modalApplyBtn" style="flex: 1; padding: 14px; border-radius: var(--radius-pill); display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span>Direct Portal</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div>
+                <a href="index.html" class="nav-brand-pill" style="display: inline-flex; margin-bottom: 16px;">
+                    <img src="img/sarthx-logo.png" alt="SarthX Logo" class="brand-logo-img">
+                    <span class="nav-brand">Sarth<span>X</span></span>
+                </a>
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; max-width: 360px;">
+                    DISCOVER. MATCH. EMPOWER. AI-powered government scheme matching and official welfare application bridge.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h3>Features</h3>
+                <ul class="footer-links">
+                    <li><a href="login.html">Citizen Profile & Matcher</a></li>
+                    <li><a href="tracker.html">Live Application Tracker</a></li>
+                    <li><a href="schemes.html">50+ Welfare Schemes</a></li>
+                    <li><a href="calculator.html">EMI & Subsidy Calculator</a></li>
+                    <li><a href="ocr-scanner.html">Document OCR Scanner</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Government Portals</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.myscheme.gov.in" target="_blank">myScheme Portal</a></li>
+                    <li><a href="https://www.jansamarth.in" target="_blank">JanSamarth Credit</a></li>
+                    <li><a href="https://pmkisan.gov.in" target="_blank">PM-KISAN</a></li>
+                    <li><a href="https://pmsvanidhi.mohua.gov.in" target="_blank">PM SVANidhi</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Official Standards</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Digital India Guidelines</a></li>
+                    <li><a href="#">DigiLocker Integration</a></li>
+                    <li><a href="#">MeitY Bhashini Mission</a></li>
+                    <li><a href="#">Direct Benefit Transfer (DBT)</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 SarthX Portal • Built for National Welfare Empowerment.</p>
+            <div style="display: flex; gap: 20px;">
+                <a href="tracker.html">Track Status</a>
+                <a href="schemes.html">Directory</a>
+                <a href="aimatcher.html">Eligibility</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/schemes-data.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/gov-bridge.js"></script>
+
+    <script>
+        // Theme toggle logic
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            const isDark = document.body.classList.contains('dark-theme');
+            localStorage.setItem('sarthx_theme', isDark ? 'dark' : 'light');
+            const icon = document.querySelector('#themeToggleBtn i');
+            if (icon) {
+                icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        }
+
+        // Initialize saved theme
+        if (localStorage.getItem('sarthx_theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+            const icon = document.querySelector('#themeToggleBtn i');
+            if (icon) icon.className = 'fa-solid fa-sun';
+        }
+
+        // Mobile drawer toggle
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const mobileDrawer = document.getElementById('mobileDrawer');
+        if (mobileBtn && mobileDrawer) {
+            mobileBtn.addEventListener('click', () => {
+                const isHidden = mobileDrawer.style.display === 'none';
+                mobileDrawer.style.display = isHidden ? 'block' : 'none';
+            });
+        }
+
+        // OTP Simulation
+        function triggerOtpSimulation() {
+            const phone = document.getElementById('custPhone').value;
+            if (!phone || phone.length < 10) {
+                alert('Please enter a valid 10-digit mobile number first.');
+                return;
+            }
+            const otpBox = document.getElementById('otpBox');
+            otpBox.style.display = 'block';
+            document.getElementById('sendOtpBtn').innerHTML = '<i class="fa-solid fa-check"></i> Verified';
+            document.getElementById('sendOtpBtn').style.background = 'rgba(16, 185, 129, 0.2)';
+        }
+
+        // Check if citizen profile already exists on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const profile = SarthXGovBridge.getUserProfile();
+            if (profile && profile.name) {
+                renderCitizenProfile(profile);
+                runSchemeMatching(profile);
+            }
+        });
+
+        // Form Submit
+        function handleCustomerLogin(e) {
+            e.preventDefault();
+            const incomeSelect = document.getElementById('custIncome');
+            const profile = {
+                name: document.getElementById('custName').value.trim(),
+                phone: document.getElementById('custPhone').value.trim(),
+                age: parseInt(document.getElementById('custAge').value) || 25,
+                category: document.getElementById('custCategory').value,
+                state: document.getElementById('custState').value,
+                incomeValue: parseInt(incomeSelect.value) || 200000,
+                income: incomeSelect.options[incomeSelect.selectedIndex].text,
+                occupation: document.getElementById('custOccupation').value,
+                land: document.getElementById('custLand').value
+            };
+
+            SarthXGovBridge.saveUserProfile(profile);
+            renderCitizenProfile(profile);
+            runSchemeMatching(profile);
+
+            // Scroll down to recommendations
+            document.getElementById('recommendationsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderCitizenProfile(profile) {
+            document.getElementById('citizenNameDisplay').textContent = profile.name;
+            document.getElementById('citizenPhoneDisplay').textContent = '+91 ' + profile.phone;
+            document.getElementById('citizenAvatar').textContent = profile.name.charAt(0).toUpperCase();
+            document.getElementById('badgeCategory').textContent = 'Category: ' + profile.category;
+            document.getElementById('badgeState').textContent = 'State: ' + profile.state;
+            document.getElementById('badgeOccupation').textContent = 'Occupation: ' + profile.occupation;
+            document.getElementById('badgeIncome').textContent = 'Income: ' + profile.income;
+
+            document.getElementById('citizenProfileBar').style.display = 'flex';
+            document.getElementById('loginCardWrapper').style.display = 'none';
+        }
+
+        function editProfile() {
+            document.getElementById('loginCardWrapper').style.display = 'block';
+            document.getElementById('citizenProfileBar').style.display = 'none';
+            const profile = SarthXGovBridge.getUserProfile();
+            if (profile) {
+                document.getElementById('custName').value = profile.name || '';
+                document.getElementById('custPhone').value = profile.phone || '';
+                document.getElementById('custAge').value = profile.age || 25;
+                document.getElementById('custCategory').value = profile.category || 'OBC';
+                document.getElementById('custState').value = profile.state || 'Uttar Pradesh';
+                document.getElementById('custIncome').value = profile.incomeValue || '200000';
+                document.getElementById('custOccupation').value = profile.occupation || 'Artisan';
+                document.getElementById('custLand').value = profile.land || 'None';
+            }
+        }
+
+        function logoutProfile() {
+            if (confirm('Switch citizen account? This will let you enter a new customer profile.')) {
+                localStorage.removeItem('sarthx_user_profile');
+                location.reload();
+            }
+        }
+
+        // Run Scheme Matching & Rank by Score
+        function runSchemeMatching(profile) {
+            const allSchemes = window.SCHEMES_DATABASE || [];
+            const scoredList = allSchemes.map(scheme => {
+                const matchResult = SarthXGovBridge.calculateMatchScore(scheme, profile);
+                return {
+                    scheme: scheme,
+                    score: matchResult.score,
+                    reasons: matchResult.reasons
+                };
+            });
+
+            // Sort descending by match score
+            scoredList.sort((a, b) => b.score - a.score);
+
+            const grid = document.getElementById('recommendedSchemesGrid');
+            grid.innerHTML = '';
+
+            scoredList.forEach(item => {
+                const s = item.scheme;
+                const score = item.score;
+                const reasons = item.reasons;
+                const isHigh = score >= 80;
+                const scoreClass = isHigh ? 'match-high' : 'match-mid';
+                const applyLink = s.directApplyUrl || s.officialUrl;
+
+                const card = document.createElement('div');
+                card.className = 'scheme-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="card-top">
+                            <span class="scheme-badge ${s.badgeClass}">${s.categoryName}</span>
+                            <div class="match-score-pill ${scoreClass}">
+                                <i class="fa-solid fa-sparkles"></i> ${score}% Match
+                            </div>
+                        </div>
+                        <div class="scheme-card-body">
+                            <h3>${s.title}</h3>
+                            <p>${s.brief}</p>
+                            
+                            <div class="match-reasons-list">
+                                ${reasons.map(r => `
+                                    <div class="match-reason-item">
+                                        <i class="fa-solid fa-circle-check"></i> <span>${r}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="benefit-row">
+                            <span class="benefit-tag">${s.benefit}</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-location-dot"></i> ${s.level}</span>
+                        </div>
+                        <div class="card-actions-group">
+                            <button class="check-details-btn" onclick="openSchemeModal('${s.id}')">
+                                <i class="fa-solid fa-circle-info"></i> Details
+                            </button>
+                            <button class="btn-auto-fill-gov" onclick="SarthXGovBridge.openGovModal('${s.id}')" title="Auto-Fill Government Form with SarthX Bridge">
+                                <i class="fa-solid fa-bolt"></i> Auto-Fill & Apply
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('recommendationsSection').style.display = 'block';
+        }
+
+        // Scheme Details Modal
+        function openSchemeModal(id) {
+            const scheme = (window.SCHEMES_DATABASE || []).find(s => s.id === id);
+            if (!scheme) return;
+
+            document.getElementById('modalBadge').className = 'scheme-badge ' + scheme.badgeClass;
+            document.getElementById('modalBadge').textContent = scheme.categoryName;
+            document.getElementById('modalTitle').textContent = scheme.title;
+            document.getElementById('modalDesc').textContent = scheme.detailedDescription || scheme.brief;
+            document.getElementById('modalBenefit').textContent = scheme.benefit;
+            document.getElementById('modalLevel').textContent = `${scheme.level} • ${scheme.state || 'All India'}`;
+            document.getElementById('modalEligibility').textContent = scheme.eligibility;
+
+            const docsList = document.getElementById('modalDocsList');
+            docsList.innerHTML = '';
+            (scheme.documentsRequired || []).forEach(doc => {
+                const li = document.createElement('li');
+                li.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${doc}`;
+                docsList.appendChild(li);
+            });
+
+            const applyLink = scheme.directApplyUrl || scheme.officialUrl;
+            document.getElementById('modalApplyBtn').href = applyLink;
+            document.getElementById('modalAutoFillBtn').onclick = () => {
+                closeSchemeModal();
+                SarthXGovBridge.openGovModal(scheme.id);
+            };
+
+            document.getElementById('schemeModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSchemeModal() {
+            document.getElementById('schemeModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+</html>

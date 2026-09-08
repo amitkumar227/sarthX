@@ -32,6 +32,9 @@
             nav_calculator: "EMI Calculator",
             nav_ocr: "OCR Scanner",
             nav_eligibility: "Eligibility",
+            nav_tracker: "Track Application",
+            nav_login: "Login / Match",
+            btn_auto_fill: "Auto-Fill & Apply",
             brand_sub: "GovTech • MyScheme",
             select_lang: "Choose Language",
 
