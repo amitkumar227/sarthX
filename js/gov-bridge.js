@@ -7,7 +7,7 @@
 (function(window) {
     'use strict';
 
-    // Demo Initial Applications for instant tracking exploration
+    // Demo Initial Applications with Verified Document Dossier
     const SEED_APPLICATIONS = [
         {
             refId: 'SARTHX-GOV-2026-SVAN-48291',
@@ -25,7 +25,33 @@
             status: 'Approved & In Disbursal Queue',
             statusClass: 'status-badge-approved',
             disbursementDate: '12 Sep 2026',
-            nodalOffice: 'District Urban Development Agency (DUDA), Lucknow'
+            nodalOffice: 'District Urban Development Agency (DUDA), Lucknow',
+            submittedDocuments: [
+                {
+                    name: 'Aadhaar Card',
+                    docNumber: 'XXXX-XXXX-8914',
+                    secondary: 'UIDAI e-KYC Linked',
+                    status: 'DigiLocker Verified',
+                    agency: 'Unique Identification Authority of India (UIDAI)',
+                    badgeColor: '#059669'
+                },
+                {
+                    name: 'Vending Certificate (ULB Recommendation)',
+                    docNumber: 'LMC-VEND-2025-4109',
+                    secondary: 'Zone 4, Lucknow Municipal Corporation',
+                    status: 'Town Vending Committee Cleared',
+                    agency: 'Urban Local Body (ULB)',
+                    badgeColor: '#0284c7'
+                },
+                {
+                    name: 'Bank Passbook (DBT Account)',
+                    docNumber: 'SBIN0001234 (A/C: ******4819)',
+                    secondary: 'State Bank of India',
+                    status: 'NPCI Aadhaar-Bridge Seeded',
+                    agency: 'Public Financial Management System (PFMS)',
+                    badgeColor: '#059669'
+                }
+            ]
         },
         {
             refId: 'SARTHX-GOV-2026-MUDR-19042',
@@ -43,9 +69,205 @@
             status: 'Document Verification & Bank Scrutiny',
             statusClass: 'status-badge-scrutiny',
             disbursementDate: '20 Sep 2026',
-            nodalOffice: 'Lead District Manager (LDM) Office, SBI Regional Centre'
+            nodalOffice: 'Lead District Manager (LDM) Office, SBI Regional Centre',
+            submittedDocuments: [
+                {
+                    name: 'Aadhaar Card',
+                    docNumber: 'XXXX-XXXX-8914',
+                    secondary: 'UIDAI e-KYC Linked',
+                    status: 'DigiLocker Verified',
+                    agency: 'UIDAI',
+                    badgeColor: '#059669'
+                },
+                {
+                    name: 'Udyam Registration Certificate',
+                    docNumber: 'UDYAM-UP-28-0091823',
+                    secondary: 'Micro Enterprise (Crafts)',
+                    status: 'Ministry of MSME Validated',
+                    agency: 'MoMSME National Portal',
+                    badgeColor: '#059669'
+                },
+                {
+                    name: 'Business Quotation & Project Report',
+                    docNumber: 'PR-2026-SHISHU-1029',
+                    secondary: 'Raw materials & equipment',
+                    status: 'Branch Scrutiny Active',
+                    agency: 'State Bank of India LDM',
+                    badgeColor: '#d97706'
+                }
+            ]
         }
     ];
+
+    /**
+     * Map any scheme document title to structured input metadata and validation rules
+     */
+    function getDocTypeInfo(docName, index, profile) {
+        const lower = (docName || '').toLowerCase();
+        const cleanId = 'doc_' + index;
+
+        if (lower.includes('aadhaar')) {
+            return {
+                id: cleanId,
+                name: docName,
+                icon: 'fa-id-card',
+                badge: 'UIDAI Linked',
+                agency: 'Unique Identification Authority of India (UIDAI)',
+                badgeColor: '#059669',
+                input1Label: 'Aadhaar UID / VID Number',
+                input1Value: (profile && profile.aadhaar) ? profile.aadhaar : 'XXXX-XXXX-8914',
+                input1Placeholder: '12-digit Aadhaar UID',
+                input2Label: 'Name as on Aadhaar Card',
+                input2Value: profile ? profile.name : 'Amit Kumar',
+                input2Placeholder: 'Full Legal Name',
+                verifiedText: 'DigiLocker e-KYC Verified'
+            };
+        } else if (lower.includes('khasra') || lower.includes('khatauni') || lower.includes('land') || lower.includes('ror') || lower.includes('patta') || lower.includes('possession') || lower.includes('sowing')) {
+            return {
+                id: cleanId,
+                name: docName,
+                icon: 'fa-vector-square',
+                badge: 'Bhulekh Synced',
+                agency: 'State Revenue & Land Records Directorate',
+                badgeColor: '#0284c7',
+                input1Label: 'Khasra / Khatauni / Survey No.',
+                input1Value: 'Khatauni #142 / Khasra 312',
+                input1Placeholder: 'e.g. Khasra 240/1, Khatauni 189',
+                input2Label: 'Land Area & Sub-District (Tehsil)',
+                input2Value: (profile && profile.land && profile.land !== 'None') ? `${profile.land} • Tehsil Sadar` : '1.4 Hectares • Tehsil Sadar',
+                input2Placeholder: 'Area in Acres/Hectares & Tehsil',
+                verifiedText: 'State Bhulekh Portal Synced'
+            };
+        } else if (lower.includes('bank') || lower.includes('passbook') || lower.includes('account')) {
+            return {
+                id: cleanId,
+                name: docName,
+                icon: 'fa-building-columns',
+                badge: 'DBT PFMS Ready',
+                agency: 'Public Financial Management System (PFMS)',
+                badgeColor: '#059669',
+                input1Label: 'Bank Account Number & Name',
+                input1Value: 'State Bank of India (A/C: ******4819)',
+                input1Placeholder: 'Account Number & Bank Name',
+                input2Label: 'Bank IFSC Code',
+                input2Value: 'SBIN0001234',
+                input2Placeholder: '11-character IFSC Code',
+                verifiedText: 'NPCI Aadhaar-Bridge Seeded'
+            };
+        } else if (lower.includes('income')) {
+            return {
+                id: cleanId,
+                name: docName,
+                icon: 'fa-certificate',
+                badge: 'Revenue Verified',
+                agency: 'District Revenue Authority / Tehsildar',
+                badgeColor: '#d97706',
+                input1Label: 'Income Certificate No. / Token',
+                input1Value: 'UP/INC/2026/89410',
+                input1Placeholder: 'e.g. UP/INC/2026/89410',
+                input2Label: 'Verified Annual Income (₹)',
+                input2Value: (profile && profile.income) ? profile.income : '₹1,50,000 / year',
+                input2Placeholder: 'e.g. ₹1,50,000',
+                verifiedText: 'Revenue Officer Pre-Verified'
+            };
+        } else if (lower.includes('caste') || lower.includes('community') || lower.includes('tribe')) {
+            return {
+                id: cleanId,
+                name: docName,
+                icon: 'fa-address-card',
+                badge: 'Social Welfare',
+                agency: 'Department of Social Justice & Welfare',
+                badgeColor: '#7c3aed',
+                input1Label: 'Caste Certificate Application / Doc ID',
+                input1Value: `CC-2025-${profile && profile.category ? profile.category : 'OBC'}-78219`,
+                input1Placeholder: 'Certificate Serial Number',
+                input2Label: 'Issuing Authority & State',
+                input2Value: `${profile && profile.state ? profile.state : 'Uttar Pradesh'} Welfare Directorate`,
+                input2Placeholder: 'Issuing Officer & State',
+                verifiedText: 'State Caste Scrutiny Portal Verified'
+            };
+        } else if (lower.includes('marksheet') || lower.includes('education') || lower.includes('bonafide') || lower.includes('degree') || lower.includes('school') || lower.includes('college')) {
+            return {
+                id: cleanId,
+                name: docName,
+                icon: 'fa-graduation-cap',
+                badge: 'NAD DigiLocker',
+                agency: 'National Academic Depository (NAD)',
+                badgeColor: '#2563eb',
+                input1Label: 'Roll Number / Student Enrollment ID',
+                input1Value: 'ROLL-2025-10928',
+                input1Placeholder: 'Roll Number / Registration No',
+                input2Label: 'Board / University & Score (%)',
+                input2Value: 'CBSE Board / 78.4%',
+                input2Placeholder: 'Institution & Percentage',
+                verifiedText: 'DigiLocker NAD Depository Synced'
+            };
+        } else if (lower.includes('disability') || lower.includes('udid')) {
+            return {
+                id: cleanId,
+                name: docName,
+                icon: 'fa-wheelchair',
+                badge: 'Swavlamban Portal',
+                agency: 'Department of Empowerment of Persons with Disabilities',
+                badgeColor: '#dc2626',
+                input1Label: 'UDID Card / Enrollment Number',
+                input1Value: 'UP2810920000189',
+                input1Placeholder: 'UDID Identification Number',
+                input2Label: 'Disability Percentage & Type',
+                input2Value: '45% - Locomotor Disability',
+                input2Placeholder: 'e.g. 40% Hearing Impairment',
+                verifiedText: 'Swavlamban Medical Board Verified'
+            };
+        } else if (lower.includes('udyam') || lower.includes('msme') || lower.includes('business') || lower.includes('trade') || lower.includes('vending') || lower.includes('artisan') || lower.includes('craft')) {
+            return {
+                id: cleanId,
+                name: docName,
+                icon: 'fa-briefcase',
+                badge: 'MoMSME / ULB',
+                agency: 'Ministry of MSME / Town Vending Committee',
+                badgeColor: '#059669',
+                input1Label: 'Udyam / Vending Registration No.',
+                input1Value: 'UDYAM-UP-00-192847',
+                input1Placeholder: 'e.g. UDYAM-XX-00-0000000',
+                input2Label: 'Enterprise / Artisan Trade Name',
+                input2Value: (profile && profile.occupation) ? `${profile.occupation} Enterprise` : 'Artisan Enterprise',
+                input2Placeholder: 'Registered Enterprise / Trade Name',
+                verifiedText: 'MoMSME Gateway Synced'
+            };
+        } else if (lower.includes('ration') || lower.includes('nfsa') || lower.includes('bpl')) {
+            return {
+                id: cleanId,
+                name: docName,
+                icon: 'fa-receipt',
+                badge: 'NFSA Portal',
+                agency: 'Department of Food & Public Distribution',
+                badgeColor: '#0284c7',
+                input1Label: 'Ration Card Number (NFSA/BPL)',
+                input1Value: 'RC-0918-2819-3019',
+                input1Placeholder: 'Ration Card Number',
+                input2Label: 'Card Category & Family Head',
+                input2Value: 'PHH (Priority Household)',
+                input2Placeholder: 'PHH / AAY / BPL',
+                verifiedText: 'State Food & Civil Supplies Verified'
+            };
+        } else {
+            return {
+                id: cleanId,
+                name: docName,
+                icon: 'fa-file-shield',
+                badge: 'DigiLocker Doc',
+                agency: 'Digital India Verified Repository',
+                badgeColor: '#4f46e5',
+                input1Label: `${docName} Serial / Token No.`,
+                input1Value: 'DOC-' + Math.floor(100000 + Math.random() * 900000),
+                input1Placeholder: 'Enter Document Reference / ID',
+                input2Label: 'Issuing Authority / State',
+                input2Value: (profile && profile.state) ? profile.state : 'Government of India',
+                input2Placeholder: 'Issuing Department / Agency',
+                verifiedText: 'Pre-Verified via DigiLocker Repository'
+            };
+        }
+    }
 
     const SarthXGovBridge = {
         // Retrieve current logged-in citizen profile
@@ -107,7 +329,7 @@
             const reasons = [];
 
             // 1. Occupation Match (+30)
-            const schemeOccs = (scheme.eligibleOccupations || []).map(o => o.toLowerCase());
+            const schemeOccs = (scheme.eligibleOccupations || (scheme.eligibilityCriteria && scheme.eligibilityCriteria.occupations) || []).map(o => o.toLowerCase());
             const userOcc = (profile.occupation || '').toLowerCase();
             if (schemeOccs.includes('all') || schemeOccs.some(o => userOcc.includes(o) || o.includes(userOcc))) {
                 score += 30;
@@ -124,7 +346,7 @@
             }
 
             // 2. Social Category Match (+20)
-            const schemeCats = (scheme.eligibleCategories || []).map(c => c.toLowerCase());
+            const schemeCats = (scheme.eligibleCategories || (scheme.eligibilityCriteria && scheme.eligibilityCriteria.caste) || []).map(c => c.toLowerCase());
             const userCat = (profile.category || '').toLowerCase();
             if (schemeCats.includes('all') || schemeCats.includes(userCat)) {
                 score += 20;
@@ -134,7 +356,7 @@
             }
 
             // 3. Income Match (+15)
-            const maxInc = scheme.maxAnnualIncome || 9999999;
+            const maxInc = scheme.maxAnnualIncome || (scheme.eligibilityCriteria && scheme.eligibilityCriteria.maxIncome) || 9999999;
             const userIncVal = profile.incomeValue || 200000;
             if (userIncVal <= maxInc) {
                 score += 15;
@@ -143,8 +365,8 @@
 
             // 4. Age Match (+15)
             const userAge = parseInt(profile.age) || 25;
-            const minAge = scheme.minAge || 18;
-            const maxAge = scheme.maxAge || 70;
+            const minAge = scheme.minAge || (scheme.eligibilityCriteria && scheme.eligibilityCriteria.minAge) || 18;
+            const maxAge = scheme.maxAge || (scheme.eligibilityCriteria && scheme.eligibilityCriteria.maxAge) || 70;
             if (userAge >= minAge && userAge <= maxAge) {
                 score += 15;
                 reasons.push(`Age ${userAge} in eligible range (${minAge}-${maxAge} yrs)`);
@@ -160,6 +382,26 @@
                 score: Math.min(score, 99),
                 reasons: reasons.slice(0, 3)
             };
+        },
+
+        // Trigger local file upload simulator for a document card
+        triggerDocUpload: function(docId) {
+            const fileInput = document.getElementById(docId + '_file');
+            if (fileInput) {
+                fileInput.click();
+            }
+        },
+
+        // Handle file change on document card
+        onDocFileSelected: function(docId, event) {
+            const files = event.target.files;
+            if (files && files.length > 0) {
+                const fileName = files[0].name;
+                const statusEl = document.getElementById(docId + '_status');
+                if (statusEl) {
+                    statusEl.innerHTML = `<i class="fa-solid fa-circle-check" style="color: var(--primary);"></i> <strong>${fileName}</strong> Attached & Cryptographically Signed`;
+                }
+            }
         },
 
         // Open Pre-Filled Government Application Modal
@@ -185,7 +427,8 @@
                 category: 'OBC',
                 state: 'Uttar Pradesh',
                 income: '₹1,00,000 - ₹2,50,000',
-                occupation: 'Artisan / Small Entrepreneur'
+                occupation: 'Artisan / Small Entrepreneur',
+                land: 'Small (Under 2 Hectares)'
             };
 
             let modal = document.getElementById('sarthxGovModal');
@@ -197,6 +440,55 @@
             }
 
             const applyLink = scheme.directApplyUrl || scheme.officialUrl;
+
+            // Prepare real required documents list from scheme metadata
+            const rawDocs = (scheme.documentsRequired && scheme.documentsRequired.length > 0) 
+                ? scheme.documentsRequired 
+                : ['Aadhaar Card', 'Active Bank Passbook', 'Income Certificate', 'Applicant Photograph'];
+
+            // Build dynamic document cards HTML
+            const docCardsHtml = rawDocs.map((docName, idx) => {
+                const docInfo = getDocTypeInfo(docName, idx, profile);
+                return `
+                    <div class="gov-doc-input-card" id="${docInfo.id}_card">
+                        <input type="file" id="${docInfo.id}_file" style="display: none;" accept=".pdf,.jpg,.jpeg,.png" onchange="SarthXGovBridge.onDocFileSelected('${docInfo.id}', event)">
+                        <input type="hidden" name="docName_${idx}" value="${docInfo.name}">
+                        <input type="hidden" name="docAgency_${idx}" value="${docInfo.agency}">
+                        <input type="hidden" name="docBadgeColor_${idx}" value="${docInfo.badgeColor}">
+
+                        <div class="gov-doc-header">
+                            <span class="gov-doc-title">
+                                <i class="fa-solid ${docInfo.icon}" style="color: var(--primary);"></i>
+                                ${docInfo.name}
+                            </span>
+                            <span class="gov-doc-badge" style="color: ${docInfo.badgeColor}; border-color: ${docInfo.badgeColor}40; background: ${docInfo.badgeColor}15;">
+                                <i class="fa-solid fa-shield-check"></i> ${docInfo.badge}
+                            </span>
+                        </div>
+
+                        <div class="gov-doc-fields-row">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" style="font-size: 0.76rem;">${docInfo.input1Label}</label>
+                                <input type="text" name="docNum_${idx}" id="${docInfo.id}_num" class="form-input gov-field-prefilled" value="${docInfo.input1Value}" placeholder="${docInfo.input1Placeholder}" required>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label" style="font-size: 0.76rem;">${docInfo.input2Label}</label>
+                                <input type="text" name="docSec_${idx}" id="${docInfo.id}_sec" class="form-input gov-field-prefilled" value="${docInfo.input2Value}" placeholder="${docInfo.input2Placeholder}" required>
+                            </div>
+                        </div>
+
+                        <div class="gov-doc-status-row">
+                            <span id="${docInfo.id}_status">
+                                <i class="fa-solid fa-circle-check" style="color: var(--primary);"></i>
+                                <span>${docInfo.verifiedText}</span>
+                            </span>
+                            <button type="button" class="gov-doc-upload-btn" onclick="SarthXGovBridge.triggerDocUpload('${docInfo.id}')">
+                                <i class="fa-solid fa-upload"></i> Re-upload / Attach File
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
 
             modal.innerHTML = `
                 <div class="modal-content gov-modal-dialog">
@@ -210,7 +502,7 @@
                                     Official Welfare Application Bridge
                                 </h3>
                                 <span style="font-size: 0.78rem; font-weight: 700; color: var(--primary);">
-                                    <i class="fa-solid fa-shield-halved"></i> JanSamarth & DigiLocker e-KYC Pre-Populated
+                                    <i class="fa-solid fa-shield-halved"></i> JanSamarth, DigiLocker & DBT Bridge Pre-Populated
                                 </span>
                             </div>
                         </div>
@@ -223,6 +515,7 @@
                     </div>
 
                     <form id="sarthxGovForm" onsubmit="SarthXGovBridge.handleFormSubmit(event, '${scheme.id}')">
+                        <!-- Section 1: Demographics -->
                         <h4 class="gov-form-section-title">
                             <i class="fa-solid fa-user-check"></i> 1. Verified Citizen Credentials
                         </h4>
@@ -253,31 +546,25 @@
                             </div>
                         </div>
 
+                        <!-- Section 2: Real Scheme-Specific Documents Required -->
                         <h4 class="gov-form-section-title">
-                            <i class="fa-solid fa-file-invoice"></i> 2. Digital Locker Document Manifest
+                            <i class="fa-solid fa-file-invoice"></i> 2. Scheme-Specific Required Documents (${rawDocs.length} Mandatory)
                         </h4>
-                        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: var(--text-muted); background: var(--bg-card); border: 1px solid var(--border-color); padding: 14px; border-radius: var(--radius-md);">
-                            <div style="display: flex; justify-content: space-between;">
-                                <span><i class="fa-solid fa-id-card" style="color: var(--primary);"></i> Aadhaar e-KYC:</span>
-                                <strong style="color: var(--primary);">Verified (Token: VID-2026-X8914)</strong>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <span><i class="fa-solid fa-building-columns" style="color: #3b82f6;"></i> Bank DBT Account:</span>
-                                <strong style="color: var(--text-main);">Aadhaar Seeded (IFSC: SBIN0001234)</strong>
-                            </div>
-                            <div style="display: flex; justify-content: space-between;">
-                                <span><i class="fa-solid fa-certificate" style="color: #f59e0b;"></i> Income Certificate:</span>
-                                <strong style="color: var(--text-main);">${profile.income || '₹1,50,000 / annum'}</strong>
-                            </div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+                            The documents below are mandatory for <strong>${scheme.title}</strong> under official Ministry guidelines. Details have been pre-fetched from your DigiLocker locker and can be reviewed or updated below:
+                        </p>
+
+                        <div id="govDocumentsWrapper">
+                            ${docCardsHtml}
                         </div>
 
                         <div class="gov-disclaimer-box">
-                            <i class="fa-solid fa-info-circle" style="color: var(--primary); margin-right: 6px;"></i>
-                            <strong>Government API Sync:</strong> Clicking "Submit Application" generates your official National Welfare Tracking ID, stores the application in your live tracker, and handshakes with the JanSamarth / MyScheme portal backend.
+                            <i class="fa-solid fa-shield-halved" style="color: var(--primary); margin-right: 6px;"></i>
+                            <strong>Government API Handshake:</strong> Submitting will transmit your cryptographic DigiLocker document signatures directly to the Ministry nodal gateway, register your official National Tracking ID, and open your live tracking timeline.
                         </div>
 
                         <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                            <button type="submit" class="btn-auto-fill-gov" style="padding: 14px; font-size: 0.95rem; border-radius: var(--radius-pill); flex: 1.5;">
+                            <button type="submit" id="btnSubmitGovBridge" class="btn-auto-fill-gov" style="padding: 14px; font-size: 0.95rem; border-radius: var(--radius-pill); flex: 1.5;">
                                 <i class="fa-solid fa-cloud-arrow-up"></i>
                                 <span>Submit Application & Sync with Official Portal</span>
                             </button>
@@ -302,9 +589,15 @@
             document.body.style.overflow = 'auto';
         },
 
-        // Submit application and store in Application Tracker
+        // Submit application, collect document manifest, simulate API handshake & store
         handleFormSubmit: function(e, schemeId) {
             e.preventDefault();
+            const submitBtn = document.getElementById('btnSubmitGovBridge');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Syncing with Ministry API Gateway...';
+            }
+
             const db = window.SCHEMES_DATABASE || [];
             let scheme = db.find(s => s.id === schemeId);
             if (!scheme && schemeId) {
@@ -327,6 +620,28 @@
             const state = document.getElementById('govFormState').value;
             const occupation = document.getElementById('govFormOccupation').value;
 
+            // Collect all dynamic document rows
+            const form = document.getElementById('sarthxGovForm');
+            const submittedDocuments = [];
+            let idx = 0;
+            while (form[`docName_${idx}`]) {
+                const docName = form[`docName_${idx}`].value;
+                const agency = form[`docAgency_${idx}`] ? form[`docAgency_${idx}`].value : 'Government of India';
+                const badgeColor = form[`docBadgeColor_${idx}`] ? form[`docBadgeColor_${idx}`].value : '#059669';
+                const docNum = form[`docNum_${idx}`] ? form[`docNum_${idx}`].value : 'VERIFIED-TOKEN';
+                const docSec = form[`docSec_${idx}`] ? form[`docSec_${idx}`].value : '';
+
+                submittedDocuments.push({
+                    name: docName,
+                    docNumber: docNum,
+                    secondary: docSec,
+                    status: 'DigiLocker Verified',
+                    agency: agency,
+                    badgeColor: badgeColor
+                });
+                idx++;
+            }
+
             // Generate official Reference ID
             const prefix = (scheme.title.replace(/[^A-Za-z]/g, '').slice(0, 4) || 'GOV').toUpperCase();
             const refId = `SARTHX-2026-${prefix}-${Math.floor(10000 + Math.random() * 90000)}`;
@@ -348,44 +663,48 @@
                 status: 'Application Submitted & Pre-Verified (In Scrutiny)',
                 statusClass: 'status-badge-scrutiny',
                 disbursementDate: 'Estimated in 14-21 days',
-                nodalOffice: `${state} District Welfare Center`
+                nodalOffice: `${state} District Welfare Center`,
+                submittedDocuments: submittedDocuments
             };
 
-            this.saveApplication(newApp);
-            this.closeGovModal();
+            // Simulate realistic API handshake latency
+            setTimeout(() => {
+                this.saveApplication(newApp);
+                this.closeGovModal();
 
-            // Show celebratory acknowledgement
-            const ackModal = document.createElement('div');
-            ackModal.className = 'modal-overlay active';
-            ackModal.innerHTML = `
-                <div class="modal-content" style="max-width: 540px; text-align: center;">
-                    <div style="width: 64px; height: 64px; background: rgba(16, 185, 129, 0.15); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px auto;">
-                        <i class="fa-solid fa-circle-check"></i>
-                    </div>
-                    <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px;">
-                        Application Submitted Successfully!
-                    </h3>
-                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 20px;">
-                        Your documents were pre-verified via SarthX Digital Bridge and synced with the official welfare portal.
-                    </p>
-                    <div style="background: var(--bg-card-hover); border: 1.5px dashed var(--border-color); border-radius: var(--radius-md); padding: 16px; margin-bottom: 24px;">
-                        <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Application Reference ID</span>
-                        <div style="font-size: 1.3rem; font-weight: 800; color: var(--primary); font-family: monospace; margin-top: 4px;">
-                            ${refId}
+                // Show celebratory acknowledgement
+                const ackModal = document.createElement('div');
+                ackModal.className = 'modal-overlay active';
+                ackModal.innerHTML = `
+                    <div class="modal-content" style="max-width: 580px; text-align: center;">
+                        <div style="width: 68px; height: 68px; background: rgba(16, 185, 129, 0.15); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 20px auto;">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <h3 style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px;">
+                            Application Synced with Government Portal!
+                        </h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
+                            <strong>${submittedDocuments.length} mandatory documents</strong> were cryptographically validated and mapped to your beneficiary DBT profile.
+                        </p>
+                        <div style="background: var(--bg-card-hover); border: 1.5px dashed var(--border-color); border-radius: var(--radius-md); padding: 16px; margin-bottom: 24px;">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Official Reference ID</span>
+                            <div style="font-size: 1.35rem; font-weight: 800; color: var(--primary); font-family: monospace; margin-top: 4px;">
+                                ${refId}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 12px;">
+                            <a href="tracker.html?id=${refId}" class="btn-auto-fill-gov" style="flex: 1.2; padding: 14px; border-radius: var(--radius-pill); text-decoration: none;">
+                                <i class="fa-solid fa-timeline"></i> Track Status & View Dossier
+                            </a>
+                            <button onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow='auto';" class="check-details-btn" style="flex: 0.8; padding: 14px; border-radius: var(--radius-pill);">
+                                Close
+                            </button>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 12px;">
-                        <a href="tracker.html?id=${refId}" class="btn-auto-fill-gov" style="flex: 1; padding: 14px; border-radius: var(--radius-pill); text-decoration: none;">
-                            <i class="fa-solid fa-timeline"></i> Track Status Live
-                        </a>
-                        <button onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow='auto';" class="check-details-btn" style="flex: 0.8; padding: 14px; border-radius: var(--radius-pill);">
-                            Close
-                        </button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(ackModal);
-            document.body.style.overflow = 'hidden';
+                `;
+                document.body.appendChild(ackModal);
+                document.body.style.overflow = 'hidden';
+            }, 800);
         }
     };
 

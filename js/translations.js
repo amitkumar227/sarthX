@@ -243,6 +243,9 @@
             nav_calculator: "ईएमआई कैलकुलेटर",
             nav_ocr: "दस्तावेज़ स्कैनर",
             nav_eligibility: "पात्रता",
+            nav_tracker: "आवेदन ट्रैक करें",
+            nav_login: "लॉगिन / मिलान",
+            btn_auto_fill: "ऑटो-फिल एवं आवेदन",
             brand_sub: "गवटेक • मायस्कीम",
             select_lang: "भाषा चुनें",
 
@@ -450,6 +453,9 @@
             nav_calculator: "ইএমআই ক্যালকুলেটর",
             nav_ocr: "নথি স্ক্যানার",
             nav_eligibility: "যোগ্যতা",
+            nav_tracker: "আবেদন ট্র্যাকিং",
+            nav_login: "লগইন / ম্যাচিং",
+            btn_auto_fill: "স্বয়ংক্রিয় পূরণ ও আবেদন",
             brand_sub: "গভটেক • মাইস্কিম",
             select_lang: "ভাষা নির্বাচন করুন",
             btn_check_details: "বিস্তারিত দেখুন",
@@ -520,6 +526,9 @@
             nav_calculator: "ईएमआय कॅल्क्युलेटर",
             nav_ocr: "कागदपत्र स्कॅनर",
             nav_eligibility: "पात्रता",
+            nav_tracker: "अर्ज ट्रॅक करा",
+            nav_login: "लॉगिन / जुळणी",
+            btn_auto_fill: "ऑटो-फिल आणि अर्ज करा",
             brand_sub: "गव्हटेक • मायस्कीम",
             select_lang: "भाषा निवडा",
             btn_check_details: "तपशील पहा",
@@ -590,6 +599,9 @@
             nav_calculator: "EMI కాలిక్యులేటర్",
             nav_ocr: "డాక్యుమెంట్ స్కానర్",
             nav_eligibility: "అర్హత",
+            nav_tracker: "దరఖాస్తు ట్రాకింగ్",
+            nav_login: "లాగిన్ / మ్యాచ్",
+            btn_auto_fill: "ఆటో-ఫిల్ & దరఖాస్తు",
             brand_sub: "గవ్‌టెక్ • మైస్కీమ్",
             select_lang: "భాషను ఎంచుకోండి",
             btn_check_details: "వివరాలు చూడండి",
@@ -660,6 +672,9 @@
             nav_calculator: "EMI கால்குலேட்டர்",
             nav_ocr: "ஆவண ஸ்கேனர்",
             nav_eligibility: "தகுதி",
+            nav_tracker: "விண்ணப்பத்தைக் கண்காணிக்கவும்",
+            nav_login: "உள்நுழைவு / பொருத்தம்",
+            btn_auto_fill: "தானியங்கு நிரப்பல் & விண்ணப்பிக்கவும்",
             brand_sub: "கவ்டெக் • மைஸ்கீம்",
             select_lang: "மொழியைத் தேர்வு செய்க",
             btn_check_details: "விவரங்களைப் பார்க்க",
@@ -730,6 +745,9 @@
             nav_calculator: "EMI કેલ્ક્યુલેટર",
             nav_ocr: "દસ્તાવેજ સ્કેનર",
             nav_eligibility: "પાત્રતા",
+            nav_tracker: "અરજી ટ્રેક કરો",
+            nav_login: "લૉગિન / મેળવણી",
+            btn_auto_fill: "ઑટો-ફિલ અને અરજી કરો",
             brand_sub: "ગવટેક • માયસ્કીમ",
             select_lang: "ભાષા પસંદ કરો",
             btn_check_details: "વિગતો જુઓ",
@@ -800,6 +818,9 @@
             nav_calculator: "EMI ಕ್ಯಾಲ್ಕುಲೇಟರ್",
             nav_ocr: "ದಾಖಲೆ ಸ್ಕ್ಯಾನರ್",
             nav_eligibility: "ಅರ್ಹತೆ",
+            nav_tracker: "ಅರ್ಜಿ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ",
+            nav_login: "ಲಾಗಿನ್ / ಹೊಂದಾಣಿಕೆ",
+            btn_auto_fill: "ಸ್ವಯಂ ಭರ್ತಿ ಮತ್ತು ಅರ್ಜಿ",
             brand_sub: "ಗವ್‌ಟೆಕ್ • ಮೈಸ್ಕೀಮ್",
             select_lang: "ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ",
             btn_check_details: "ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ",
@@ -870,6 +891,9 @@
             nav_calculator: "EMI കാൽക്കുലേറ്റർ",
             nav_ocr: "രേഖ സ്കാനർ",
             nav_eligibility: "അർഹത",
+            nav_tracker: "അപേക്ഷ ട്രാക്ക് ചെയ്യുക",
+            nav_login: "ലോഗിൻ / പൊരുത്തം",
+            btn_auto_fill: "സ്വയം പൂരിപ്പിച്ച് അപേക്ഷിക്കുക",
             brand_sub: "ഗവ്ടെക് • മൈസ്കീം",
             select_lang: "ഭാഷ തിരഞ്ഞെടുക്കുക",
             btn_check_details: "വിശദാംശങ്ങൾ കാണുക",
@@ -940,6 +964,9 @@
             nav_calculator: "EMI ਕੈਲਕੁਲੇਟਰ",
             nav_ocr: "ਦਸਤਾਵੇਜ਼ ਸਕੈਨਰ",
             nav_eligibility: "ਯੋਗਤਾ",
+            nav_tracker: "ਅਰਜ਼ੀ ਟ੍ਰੈਕ ਕਰੋ",
+            nav_login: "ਲਾਗਇਨ / ਮੈਚ",
+            btn_auto_fill: "ਆਟੋ-ਫਿਲ ਅਤੇ ਅਰਜ਼ੀ",
             brand_sub: "ਗਵਟੈੱਕ • ਮਾਈਸਕੀਮ",
             select_lang: "ਭਾਸ਼ਾ ਚੁਣੋ",
             btn_check_details: "ਵੇਰਵੇ ਦੇਖੋ",
@@ -1010,6 +1037,9 @@
             nav_calculator: "EMI କାଲକୁଲେଟର",
             nav_ocr: "ଦସ୍ତାବିଜ୍ ସ୍କାନର୍",
             nav_eligibility: "ଯୋଗ୍ୟତା",
+            nav_tracker: "ଆବେଦନ ଟ୍ରାକ୍ କରନ୍ତୁ",
+            nav_login: "ଲଗଇନ୍ / ମେଳ",
+            btn_auto_fill: "ଅଟୋ-ଫିଲ୍ ଏବଂ ଆବେଦନ",
             brand_sub: "ଗଭ୍‌ଟେକ୍ • ମାଇସ୍କିମ୍",
             select_lang: "ଭାଷା ବାଛନ୍ତୁ",
             btn_check_details: "ବିବରଣୀ ଦେଖନ୍ତୁ",
@@ -1080,6 +1110,9 @@
             nav_calculator: "EMI কেলকুলেটৰ",
             nav_ocr: "নথি স্কেনাৰ",
             nav_eligibility: "যোগ্যতা",
+            nav_tracker: "আবেদন ট্ৰেক কৰক",
+            nav_login: "লগইন / মিল",
+            btn_auto_fill: "স্বয়ংক্ৰিয় পূৰণ আৰু আবেদন",
             brand_sub: "গভটেক • মাইস্কিম",
             select_lang: "ভাষা বাছক",
             btn_check_details: "বিৱৰণ চাওক",
@@ -1150,6 +1183,9 @@
             nav_calculator: "ای ایم آئی کیلکولیٹر",
             nav_ocr: "دستاویز اسکینر",
             nav_eligibility: "اہلیت",
+            nav_tracker: "درخواست ٹریک کریں",
+            nav_login: "لاگ ان / میچ",
+            btn_auto_fill: "آٹو فل اور درخواست دیں",
             brand_sub: "گوٹیک • مائی اسکیم",
             select_lang: "زبان منتخب کریں",
             btn_check_details: "تفصیلات دیکھیں",
@@ -1239,7 +1275,7 @@
 
     /**
      * Translation lookup with multi-tier fallback:
-     * targetLang -> Hindi (hi) -> English (en) -> key
+     * targetLang -> English (en) -> Hindi (hi) -> key
      */
     function t(rawKey, lang) {
         if (!rawKey) return '';
@@ -1248,11 +1284,11 @@
         if (DICTIONARY[currentLang] && DICTIONARY[currentLang][key]) {
             return DICTIONARY[currentLang][key];
         }
-        if (DICTIONARY['hi'] && DICTIONARY['hi'][key]) {
-            return DICTIONARY['hi'][key];
-        }
         if (DICTIONARY['en'] && DICTIONARY['en'][key]) {
             return DICTIONARY['en'][key];
+        }
+        if (DICTIONARY['hi'] && DICTIONARY['hi'][key]) {
+            return DICTIONARY['hi'][key];
         }
         return rawKey;
     }

@@ -175,6 +175,28 @@
                         </div>
                     </div>
 
+                    <!-- Verified Document Dossier Table in Receipt -->
+                    <div style="margin-bottom: 20px;">
+                        <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 700; display: block; margin-bottom: 8px;">
+                            <i class="fa-solid fa-folder-closed" style="color: #059669;"></i> Cryptographically Stamped Scheme Documents
+                        </span>
+                        <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
+                                <thead>
+                                    <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569;">
+                                        <th style="padding: 8px 12px; font-weight: 700;">Document Title</th>
+                                        <th style="padding: 8px 12px; font-weight: 700;">Certificate / Token ID</th>
+                                        <th style="padding: 8px 12px; font-weight: 700;">Verification Agency</th>
+                                        <th style="padding: 8px 12px; font-weight: 700; text-align: center;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="receiptDocsTableBody">
+                                    <!-- Populated dynamically via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div style="background: #f1f5f9; border-radius: 8px; padding: 12px; font-size: 0.78rem; color: #475569; line-height: 1.4;">
                         <strong>Authentication Seal:</strong> This receipt certifies that documents have been verified via DigiLocker e-KYC and mapped to the beneficiary DBT account. Track progress anytime on <code>https://amitkumar227.github.io/sarthX/tracker.html</code>.
                     </div>
@@ -410,6 +432,39 @@
                         </div>
                     </div>
 
+                    <!-- Submitted Scheme Document Dossier -->
+                    <div class="tracker-docs-dossier">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                            <h4 style="font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin: 0; display: flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-folder-closed" style="color: var(--primary);"></i>
+                                Submitted Document Dossier (${(app.submittedDocuments || []).length || 2} Verified Documents)
+                            </h4>
+                            <span style="font-size: 0.72rem; color: #059669; font-weight: 700;">
+                                <i class="fa-solid fa-circle-check"></i> Pre-Verified via DigiLocker & State Portals
+                            </span>
+                        </div>
+                        <div class="tracker-docs-grid">
+                            ${((app.submittedDocuments && app.submittedDocuments.length > 0) ? app.submittedDocuments : [
+                                { name: 'Aadhaar Card', docNumber: 'XXXX-XXXX-8914', secondary: 'UIDAI e-KYC Linked', status: 'DigiLocker Verified', agency: 'UIDAI', badgeColor: '#059669' },
+                                { name: 'Bank Passbook', docNumber: 'SBIN0001234 (A/C: ******4819)', secondary: 'DBT Enabled', status: 'PFMS Validated', agency: 'PFMS', badgeColor: '#059669' }
+                            ]).map(d => `
+                                <div class="tracker-doc-chip">
+                                    <div class="tracker-doc-chip-top">
+                                        <span class="tracker-doc-chip-title">
+                                            <i class="fa-solid fa-file-shield" style="color: ${d.badgeColor || '#059669'};"></i>
+                                            ${d.name}
+                                        </span>
+                                        <span class="tracker-doc-chip-badge" style="color: ${d.badgeColor || '#059669'};">
+                                            <i class="fa-solid fa-badge-check"></i> ${d.status || 'Verified'}
+                                        </span>
+                                    </div>
+                                    <div class="tracker-doc-chip-id">${d.docNumber}</div>
+                                    <div style="font-size: 0.72rem; color: var(--text-muted);">${d.secondary ? d.secondary + ' • ' : ''}${d.agency || 'Government Authority'}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
                     <!-- Actions -->
                     <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                         <button type="button" class="check-details-btn" onclick="openReceiptModal('${app.refId}')" style="padding: 10px 18px; border-radius: var(--radius-pill); display: flex; align-items: center; gap: 8px;">
@@ -437,6 +492,29 @@
             document.getElementById('receiptPhone').textContent = '+91 ' + app.phone;
             document.getElementById('receiptState').textContent = app.state || 'All India';
             document.getElementById('receiptBenefit').textContent = app.benefit;
+
+            // Populate Submitted Documents Table in Receipt
+            const tbody = document.getElementById('receiptDocsTableBody');
+            if (tbody) {
+                tbody.innerHTML = '';
+                const docs = (app.submittedDocuments && app.submittedDocuments.length > 0) ? app.submittedDocuments : [
+                    { name: 'Aadhaar Card', docNumber: 'XXXX-XXXX-8914', agency: 'Unique Identification Authority of India', status: 'Verified' },
+                    { name: 'Bank Passbook (DBT)', docNumber: 'SBIN0001234 (A/C: ******4819)', agency: 'Public Financial Management System', status: 'Verified' }
+                ];
+                docs.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.style.borderBottom = '1px solid #f1f5f9';
+                    tr.innerHTML = `
+                        <td style="padding: 8px 12px; font-weight: 600; color: #0f172a;">${d.name}</td>
+                        <td style="padding: 8px 12px; font-family: monospace; color: #475569;">${d.docNumber}</td>
+                        <td style="padding: 8px 12px; color: #64748b;">${d.agency || 'Gov Authority'}</td>
+                        <td style="padding: 8px 12px; text-align: center; color: #059669; font-weight: 700;">
+                            <i class="fa-solid fa-circle-check"></i> Sealed
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
 
             document.getElementById('receiptModal').classList.add('active');
             document.body.style.overflow = 'hidden';

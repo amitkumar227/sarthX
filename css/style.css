@@ -76,13 +76,64 @@ body {
     overflow-x: hidden;
     line-height: 1.5;
     min-height: 100vh;
+    position: relative;
     background-image: radial-gradient(at 0% 0%, rgba(5, 150, 105, 0.05) 0px, transparent 50%),
                       radial-gradient(at 100% 0%, rgba(249, 115, 22, 0.04) 0px, transparent 50%);
+}
+
+/* =========================================================
+   AUTHENTIC 24-SPOKE ROTATING ASHOK CHAKRA BACKGROUND
+   ========================================================= */
+body::before {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: min(760px, 92vw);
+    height: min(760px, 92vw);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3Cg id='spoke'%3E%3Cline x1='100' y1='100' x2='100' y2='14' stroke='%23059669' stroke-width='2.2' stroke-linecap='round'/%3E%3Ccircle cx='100' cy='14' r='2' fill='%23059669'/%3E%3C/g%3E%3C/defs%3E%3Ccircle cx='100' cy='100' r='88' fill='none' stroke='%23059669' stroke-width='4'/%3E%3Ccircle cx='100' cy='100' r='82' fill='none' stroke='%23059669' stroke-width='1.5' stroke-dasharray='2 3'/%3E%3Ccircle cx='100' cy='100' r='18' fill='%23059669'/%3E%3Ccircle cx='100' cy='100' r='7' fill='%23ffffff'/%3E%3Cuse href='%23spoke'/%3E%3Cuse href='%23spoke' transform='rotate(15 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(30 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(45 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(60 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(75 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(90 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(105 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(120 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(135 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(150 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(165 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(180 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(195 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(210 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(225 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(240 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(255 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(270 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(285 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(300 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(315 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(330 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(345 100 100)'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.045;
+    animation: rotateAshokChakra 75s linear infinite;
+    transform-origin: center center;
+    filter: drop-shadow(0 0 25px rgba(5, 150, 105, 0.1));
 }
 
 body.dark-theme {
     background-image: radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
                       radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.06) 0px, transparent 50%);
+}
+
+body.dark-theme::before {
+    opacity: 0.065;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3Cg id='spoke'%3E%3Cline x1='100' y1='100' x2='100' y2='14' stroke='%2310b981' stroke-width='2.2' stroke-linecap='round'/%3E%3Ccircle cx='100' cy='14' r='2' fill='%2310b981'/%3E%3C/g%3E%3C/defs%3E%3Ccircle cx='100' cy='100' r='88' fill='none' stroke='%2310b981' stroke-width='4'/%3E%3Ccircle cx='100' cy='100' r='82' fill='none' stroke='%2310b981' stroke-width='1.5' stroke-dasharray='2 3'/%3E%3Ccircle cx='100' cy='100' r='18' fill='%2310b981'/%3E%3Ccircle cx='100' cy='100' r='7' fill='%23151e28'/%3E%3Cuse href='%23spoke'/%3E%3Cuse href='%23spoke' transform='rotate(15 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(30 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(45 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(60 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(75 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(90 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(105 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(120 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(135 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(150 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(165 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(180 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(195 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(210 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(225 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(240 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(255 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(270 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(285 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(300 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(315 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(330 100 100)'/%3E%3Cuse href='%23spoke' transform='rotate(345 100 100)'/%3E%3C/svg%3E");
+    filter: drop-shadow(0 0 30px rgba(16, 185, 129, 0.15));
+}
+
+@keyframes rotateAshokChakra {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.site-header,
+main,
+.schemes-page-wrapper,
+.hero-section,
+.categories-section,
+.featured-section,
+.site-footer,
+.login-page-wrapper,
+.tracker-page-wrapper {
+    position: relative;
+    z-index: 1;
 }
 
 a {
@@ -2120,8 +2171,185 @@ body.dark-theme .calc-results-card {
     border-radius: 8px;
 }
 
+/* Document Dossier & Dynamic Document Cards */
+.gov-doc-input-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: var(--transition);
+}
+
+.gov-doc-input-card:hover {
+    border-color: rgba(5, 150, 105, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.gov-doc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.gov-doc-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gov-doc-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    background: rgba(5, 150, 105, 0.12);
+    color: #059669;
+    border: 1px solid rgba(5, 150, 105, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.gov-doc-fields-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.gov-doc-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-color);
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.gov-doc-upload-btn {
+    background: var(--bg-card-hover);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: var(--transition);
+}
+
+.gov-doc-upload-btn:hover {
+    background: rgba(5, 150, 105, 0.1);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Application Tracker Document Dossier */
+.tracker-docs-dossier {
+    background: var(--bg-card-hover);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+}
+
+.tracker-docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.tracker-doc-chip {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.tracker-doc-chip-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tracker-doc-chip-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tracker-doc-chip-id {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-family: monospace;
+}
+
+.tracker-doc-chip-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #059669;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Receipt Print Formatting */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #receiptModal, #receiptPrintArea, #receiptPrintArea * {
+        visibility: visible;
+    }
+    #receiptPrintArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    .receipt-card-modal {
+        border: 1px solid #94a3b8 !important;
+        box-shadow: none !important;
+    }
+    .modal-overlay {
+        background: transparent !important;
+        position: static !important;
+    }
+    .modal-content {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+    .btn-auto-fill-gov, .check-details-btn, .modal-close-btn {
+        display: none !important;
+    }
+}
+
 @media (max-width: 768px) {
-    .form-grid-2col {
+    .form-grid-2col,
+    .gov-doc-fields-row {
         grid-template-columns: 1fr;
     }
     
@@ -2130,3 +2358,4 @@ body.dark-theme .calc-results-card {
         gap: 20px;
     }
 }
+
