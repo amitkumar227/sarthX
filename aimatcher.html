@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Scheme Matcher - SarthX MyScheme Portal</title>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ==============================================
+       EXACT DUAL-PILL NAVBAR
+       ============================================== -->
+    <header class="site-header">
+        <a href="index.html" class="nav-brand-pill">
+            <div class="brand-emblem"><i class="fa-solid fa-landmark-flag"></i></div>
+            <div class="brand-text-box">
+                <span class="brand-subtitle">GovTech • MyScheme</span>
+                <span class="nav-brand">Sarth<span>X</span></span>
+            </div>
+        </a>
+
+        <nav class="nav-pill-right">
+            <ul class="nav-links">
+                <li><a href="index.html" data-i18n="Home">Home</a></li>
+                <li><a href="schemes.html" data-i18n="Schemes">Schemes</a></li>
+                <li><a href="aimatcher.html" class="active" data-i18n="AI Matcher">AI Matcher</a></li>
+                <li><a href="calculator.html" data-i18n="Calculator">EMI Calculator</a></li>
+                <li><a href="ocr-scanner.html" data-i18n="OCR Scanner">OCR Scanner</a></li>
+                <li><a href="eligibility.html" data-i18n="Eligibility">Eligibility</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <select id="languageSelect" class="nav-lang-select" title="Choose Language (Bhashini)">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="bn">বাংলা (Bengali)</option>
+                    <option value="mr">मराठी (Marathi)</option>
+                    <option value="te">తెలుగు (Telugu)</option>
+                    <option value="ta">தமிழ் (Tamil)</option>
+                </select>
+
+                <button id="bhashiniSettingsBtn" class="nav-icon-btn" onclick="openBhashiniModal()" title="Bhashini AI Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+
+                <button id="mobileMenuBtn" class="mobile-toggle" aria-label="Open navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div id="mobileDrawer" style="display: none; position: fixed; top: 80px; left: 20px; right: 20px; background: #171c19; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; z-index: 999; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px;">
+            <li><a href="index.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Home</a></li>
+            <li><a href="schemes.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Schemes Directory</a></li>
+            <li><a href="aimatcher.html" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">AI Matcher</a></li>
+            <li><a href="calculator.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">EMI Calculator</a></li>
+            <li><a href="ocr-scanner.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">OCR Scanner</a></li>
+            <li><a href="eligibility.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Eligibility Matrix</a></li>
+        </ul>
+    </div>
+
+    <!-- ==============================================
+       AI MATCHER 7-STEP WIZARD
+       ============================================== -->
+    <div class="wizard-wrapper">
+        
+        <!-- Auto-filled from OCR Alert Banner -->
+        <div id="ocrAutofillBanner" style="display: none; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.35); border-radius: 14px; padding: 16px 20px; margin-bottom: 20px; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <i class="fa-solid fa-id-card" style="font-size: 1.5rem; color: var(--primary);"></i>
+                <div>
+                    <h4 style="color: #fff; font-size: 1rem;">Profile Auto-Filled from Document OCR!</h4>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Age, gender, and income have been pre-populated from your scanned document.</p>
+                </div>
+            </div>
+            <button type="button" class="search-submit-btn" style="padding: 8px 16px; font-size: 0.82rem;" onclick="computeMatches()">
+                Quick Match &rarr;
+            </button>
+        </div>
+
+        <div class="wizard-card" id="wizardCard">
+            
+            <!-- Progress Bar -->
+            <div class="wizard-progress">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <!-- STEP 1: GENDER -->
+            <div class="wizard-step active" id="step1">
+                <div class="step-header">
+                    <span class="step-num">Step 1 of 7</span>
+                    <h2 class="step-title">What is your gender?</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Many government schemes offer specialized grants for women and girl children.</p>
+                </div>
+
+                <div class="options-grid" id="genderOptions">
+                    <div class="option-card selected" data-value="female">
+                        <i class="fa-solid fa-venus"></i>
+                        <h4>Female</h4>
+                        <p>Women & Girls</p>
+                    </div>
+                    <div class="option-card" data-value="male">
+                        <i class="fa-solid fa-mars"></i>
+                        <h4>Male</h4>
+                        <p>Men & Boys</p>
+                    </div>
+                    <div class="option-card" data-value="transgender">
+                        <i class="fa-solid fa-transgender"></i>
+                        <h4>Transgender</h4>
+                        <p>Third Gender</p>
+                    </div>
+                </div>
+
+                <div class="wizard-nav" style="justify-content: flex-end;">
+                    <button type="button" class="wizard-btn-next" onclick="nextStep(2)">Continue &rarr;</button>
+                </div>
+            </div>
+
+            <!-- STEP 2: AGE -->
+            <div class="wizard-step" id="step2">
+                <div class="step-header">
+                    <span class="step-num">Step 2 of 7</span>
+                    <h2 class="step-title">How old are you?</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Age determines qualification for youth scholarships, work schemes, or senior pensions.</p>
+                </div>
+
+                <div class="age-slider-box">
+                    <div class="age-display" id="ageDisplay">21 <span style="font-size: 1.5rem; color: #9ca3af;">Years</span></div>
+                    <input type="range" min="0" max="95" value="21" class="range-slider" id="ageInput" oninput="updateAgeDisplay(this.value)">
+                </div>
+
+                <div class="wizard-nav">
+                    <button type="button" class="wizard-btn-prev" onclick="nextStep(1)">&larr; Back</button>
+                    <button type="button" class="wizard-btn-next" onclick="nextStep(3)">Continue &rarr;</button>
+                </div>
+            </div>
+
+            <!-- STEP 3: STATE & AREA -->
+            <div class="wizard-step" id="step3">
+                <div class="step-header">
+                    <span class="step-num">Step 3 of 7</span>
+                    <h2 class="step-title">Where do you reside?</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Select your state and whether you live in a rural village or urban city.</p>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">State or Union Territory</label>
+                    <select id="userStateSelect" class="filter-select" style="width: 100%; height: 50px;">
+                        <option value="All India">All India / Central</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="West Bengal">West Bengal</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Delhi">Delhi</option>
+                    </select>
+                </div>
+
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 8px;">Area Type</label>
+                <div class="options-grid" id="areaOptions">
+                    <div class="option-card selected" data-value="rural">
+                        <i class="fa-solid fa-tree"></i>
+                        <h4>Rural</h4>
+                        <p>Village / Gram Panchayat</p>
+                    </div>
+                    <div class="option-card" data-value="urban">
+                        <i class="fa-solid fa-city"></i>
+                        <h4>Urban</h4>
+                        <p>City / Town Municipality</p>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button type="button" class="wizard-btn-prev" onclick="nextStep(2)">&larr; Back</button>
+                    <button type="button" class="wizard-btn-next" onclick="nextStep(4)">Continue &rarr;</button>
+                </div>
+            </div>
+
+            <!-- STEP 4: CASTE / CATEGORY -->
+            <div class="wizard-step" id="step4">
+                <div class="step-header">
+                    <span class="step-num">Step 4 of 7</span>
+                    <h2 class="step-title">Select your Social Category</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Several central welfare programs provide affirmative quotas and full fee reimbursements.</p>
+                </div>
+
+                <div class="options-grid" id="casteOptions">
+                    <div class="option-card selected" data-value="general">
+                        <i class="fa-solid fa-user-check"></i>
+                        <h4>General</h4>
+                        <p>Unreserved</p>
+                    </div>
+                    <div class="option-card" data-value="obc">
+                        <i class="fa-solid fa-users"></i>
+                        <h4>OBC</h4>
+                        <p>Other Backward</p>
+                    </div>
+                    <div class="option-card" data-value="sc">
+                        <i class="fa-solid fa-award"></i>
+                        <h4>SC</h4>
+                        <p>Scheduled Caste</p>
+                    </div>
+                    <div class="option-card" data-value="st">
+                        <i class="fa-solid fa-mountain-sun"></i>
+                        <h4>ST</h4>
+                        <p>Scheduled Tribe</p>
+                    </div>
+                    <div class="option-card" data-value="ews">
+                        <i class="fa-solid fa-certificate"></i>
+                        <h4>EWS</h4>
+                        <p>Economically Weaker</p>
+                    </div>
+                    <div class="option-card" data-value="minority">
+                        <i class="fa-solid fa-hands-holding-child"></i>
+                        <h4>Minority</h4>
+                        <p>Minority Community</p>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button type="button" class="wizard-btn-prev" onclick="nextStep(3)">&larr; Back</button>
+                    <button type="button" class="wizard-btn-next" onclick="nextStep(5)">Continue &rarr;</button>
+                </div>
+            </div>
+
+            <!-- STEP 5: OCCUPATION -->
+            <div class="wizard-step" id="step5">
+                <div class="step-header">
+                    <span class="step-num">Step 5 of 7</span>
+                    <h2 class="step-title">What is your current occupation?</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Select your primary activity to find occupation-specific grants, training, and loans.</p>
+                </div>
+
+                <div class="options-grid" id="occupationOptions">
+                    <div class="option-card selected" data-value="student">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <h4>Student</h4>
+                        <p>School / College / Higher Ed</p>
+                    </div>
+                    <div class="option-card" data-value="farmer">
+                        <i class="fa-solid fa-tractor"></i>
+                        <h4>Farmer</h4>
+                        <p>Agriculture & Cultivator</p>
+                    </div>
+                    <div class="option-card" data-value="self-employed">
+                        <i class="fa-solid fa-briefcase"></i>
+                        <h4>Self-Employed / MSME</h4>
+                        <p>Business / Shop / Startup</p>
+                    </div>
+                    <div class="option-card" data-value="worker">
+                        <i class="fa-solid fa-hammer"></i>
+                        <h4>Unorganized Worker</h4>
+                        <p>Laborer / Artisan / Vendor</p>
+                    </div>
+                    <div class="option-card" data-value="unemployed">
+                        <i class="fa-solid fa-user-clock"></i>
+                        <h4>Unemployed Youth</h4>
+                        <p>Seeking Skill / Job</p>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button type="button" class="wizard-btn-prev" onclick="nextStep(4)">&larr; Back</button>
+                    <button type="button" class="wizard-btn-next" onclick="nextStep(6)">Continue &rarr;</button>
+                </div>
+            </div>
+
+            <!-- STEP 6: ANNUAL FAMILY INCOME -->
+            <div class="wizard-step" id="step6">
+                <div class="step-header">
+                    <span class="step-num">Step 6 of 7</span>
+                    <h2 class="step-title">What is your annual family income?</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Government subsidies and scholarships have specific parental/family income ceilings.</p>
+                </div>
+
+                <div class="options-grid" id="incomeOptions">
+                    <div class="option-card selected" data-value="bpl" data-num="100000">
+                        <i class="fa-solid fa-coins"></i>
+                        <h4>Below ₹1 Lakh</h4>
+                        <p>BPL / Antyodaya</p>
+                    </div>
+                    <div class="option-card" data-value="low" data-num="250000">
+                        <i class="fa-solid fa-wallet"></i>
+                        <h4>₹1 Lakh – ₹2.5 Lakhs</h4>
+                        <p>Low Income (LIG)</p>
+                    </div>
+                    <div class="option-card" data-value="mid" data-num="500000">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                        <h4>₹2.5 Lakhs – ₹5 Lakhs</h4>
+                        <p>Moderate Income</p>
+                    </div>
+                    <div class="option-card" data-value="mid-high" data-num="800000">
+                        <i class="fa-solid fa-money-bill-trend-up"></i>
+                        <h4>₹5 Lakhs – ₹8 Lakhs</h4>
+                        <p>Middle Income (MIG)</p>
+                    </div>
+                    <div class="option-card" data-value="high" data-num="1500000">
+                        <i class="fa-solid fa-building-columns"></i>
+                        <h4>Above ₹8 Lakhs</h4>
+                        <p>Higher Income</p>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button type="button" class="wizard-btn-prev" onclick="nextStep(5)">&larr; Back</button>
+                    <button type="button" class="wizard-btn-next" onclick="nextStep(7)">Continue &rarr;</button>
+                </div>
+            </div>
+
+            <!-- STEP 7: SPECIAL STATUS (LAND & DISABILITY) -->
+            <div class="wizard-step" id="step7">
+                <div class="step-header">
+                    <span class="step-num">Step 7 of 7</span>
+                    <h2 class="step-title">Special Beneficiary Status</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">Check any that apply to unlock special disability pensions, farmer grants, or girl child savings.</p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px;">
+                    <label class="option-card" style="display: flex; align-items: center; justify-content: space-between; text-align: left; padding: 18px 24px;">
+                        <div>
+                            <h4 style="font-size: 1.1rem; color: #fff;"><i class="fa-solid fa-wheelchair" style="font-size: 1.2rem; margin-right: 8px; vertical-align: middle;"></i> Person with Benchmark Disability (Divyangjan)</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted);">40% or more certified benchmark disability</p>
+                        </div>
+                        <input type="checkbox" id="userDisabilityInput" style="width: 20px; height: 20px; accent-color: var(--primary);">
+                    </label>
+
+                    <label class="option-card" style="display: flex; align-items: center; justify-content: space-between; text-align: left; padding: 18px 24px;">
+                        <div>
+                            <h4 style="font-size: 1.1rem; color: #fff;"><i class="fa-solid fa-seedling" style="font-size: 1.2rem; margin-right: 8px; vertical-align: middle;"></i> Owns Agricultural Land</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted);">Family owns cultivable agricultural land (Khasra/Khatauni)</p>
+                        </div>
+                        <input type="checkbox" id="userLandInput" style="width: 20px; height: 20px; accent-color: var(--primary);">
+                    </label>
+
+                    <label class="option-card" style="display: flex; align-items: center; justify-content: space-between; text-align: left; padding: 18px 24px;">
+                        <div>
+                            <h4 style="font-size: 1.1rem; color: #fff;"><i class="fa-solid fa-child-dress" style="font-size: 1.2rem; margin-right: 8px; vertical-align: middle;"></i> Girl Child in Family (&lt; 10 Years)</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-muted);">Qualifies for Sukanya Samriddhi Yojana (SSY)</p>
+                        </div>
+                        <input type="checkbox" id="userGirlChildInput" style="width: 20px; height: 20px; accent-color: var(--primary);">
+                    </label>
+                </div>
+
+                <div class="wizard-nav">
+                    <button type="button" class="wizard-btn-prev" onclick="nextStep(6)">&larr; Back</button>
+                    <button type="button" class="wizard-btn-next" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);" onclick="computeMatches()">
+                        <span>Calculate Eligible Schemes</span>
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- RESULTS STEP: DISPLAY MATCHED SCHEMES WITH DIRECT APPLY -->
+            <div class="wizard-step" id="stepResults">
+                <div class="step-header" style="text-align: center;">
+                    <span class="step-num"><i class="fa-solid fa-circle-check"></i> AI EVALUATION COMPLETE</span>
+                    <h2 class="step-title" id="resultsMainTitle">Schemes Matching Your Profile</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">We evaluated 50+ government welfare schemes based on your inputs.</p>
+                </div>
+
+                <!-- User Profile Badges Summary -->
+                <div id="profileSummaryBadges" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 30px;"></div>
+
+                <!-- 100% Matches Section -->
+                <div style="margin-bottom: 40px;">
+                    <h3 style="font-size: 1.3rem; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                        <span style="background: #10b981; color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+                        100% Eligible Schemes (<span id="eligibleCount">0</span>)
+                    </h3>
+                    <div class="schemes-grid" id="eligibleGrid" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));"></div>
+                </div>
+
+                <!-- Likely / Conditional Matches -->
+                <div style="margin-bottom: 40px;">
+                    <h3 style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                        <span style="background: #f59e0b; color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">
+                            <i class="fa-solid fa-star-half-stroke"></i>
+                        </span>
+                        Potentially Eligible Schemes (<span id="potentialCount">0</span>)
+                    </h3>
+                    <div class="schemes-grid" id="potentialGrid" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));"></div>
+                </div>
+
+                <!-- Actions -->
+                <div style="display: flex; gap: 16px; justify-content: center; border-top: 1px solid var(--border-color); padding-top: 24px;">
+                    <button type="button" class="wizard-btn-prev" onclick="restartWizard()">
+                        <i class="fa-solid fa-rotate-left"></i> Change Profile
+                    </button>
+                    <a href="schemes.html" class="search-submit-btn">
+                        <span>Browse Entire Directory</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scheme Details Modal -->
+    <div class="modal-overlay" id="schemeModal">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeSchemeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <span class="scheme-badge" id="modalBadge">Central</span>
+                <div class="modal-title-row">
+                    <h3 class="modal-title" id="modalTitle">Scheme Title</h3>
+                    <button id="modalTTSBtn" class="tts-speak-btn" title="Listen in your language (Bhashini AI Voice)">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <p class="modal-desc" id="modalDesc">Detailed description...</p>
+            
+            <div class="modal-info-grid">
+                <div class="info-box">
+                    <span>Key Benefit</span>
+                    <p id="modalBenefit">₹0</p>
+                </div>
+                <div class="info-box">
+                    <span>Level & Scope</span>
+                    <p id="modalLevel">Central • All India</p>
+                </div>
+                <div class="info-box" style="grid-column: 1 / -1;">
+                    <span>Eligibility Criteria</span>
+                    <p id="modalEligibility" style="font-weight: 500; font-size: 0.9rem; line-height: 1.5;">Eligibility details...</p>
+                </div>
+            </div>
+
+            <h4 class="modal-section-title"><i class="fa-solid fa-file-shield" style="color: var(--primary);"></i> Documents Required</h4>
+            <ul class="modal-docs-list" id="modalDocsList"></ul>
+
+            <h4 class="modal-section-title"><i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> Application Process</h4>
+            <p id="modalAppProcess" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;"></p>
+
+            <a href="#" target="_blank" rel="noopener noreferrer" class="modal-action-btn" id="modalApplyBtn">
+                <span>Direct Apply on Official Government Portal</span>
+                <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left: 8px;"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Bhashini Config Modal -->
+    <div class="modal-overlay" id="bhashiniConfigModal">
+        <div class="modal-content" style="max-width: 580px;">
+            <button class="modal-close-btn" onclick="closeBhashiniModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <span class="scheme-badge" style="background: rgba(16,185,129,0.2); color: var(--primary);">MeitY • National Language Mission</span>
+                <h3 class="modal-title" style="margin-top: 8px;">Bhashini AI Configuration</h3>
+            </div>
+            <p class="modal-desc">Configure official Bhashini credentials or use smart offline fallback.</p>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button type="button" class="wizard-btn-prev" onclick="closeBhashiniModal()" style="flex: 1;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div>
+                <a href="index.html" class="nav-brand-pill" style="display: inline-flex; margin-bottom: 16px;">
+                    <div class="brand-emblem"><i class="fa-solid fa-landmark-flag"></i></div>
+                    <span class="nav-brand">Sarth<span>X</span></span>
+                </a>
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; max-width: 360px;">
+                    An AI-enabled welfare empowerment platform bridging Indian citizens to verified social security programs under the Digital India & myScheme framework.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h3>Navigation</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="schemes.html">Explore All Schemes</a></li>
+                    <li><a href="aimatcher.html">AI Eligibility Matcher</a></li>
+                    <li><a href="calculator.html">EMI Calculator</a></li>
+                    <li><a href="ocr-scanner.html">OCR Scanner</a></li>
+                    <li><a href="eligibility.html">Document Matrix</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Key Sectors</h3>
+                <ul class="footer-links">
+                    <li><a href="schemes.html?category=students">Student Scholarships</a></li>
+                    <li><a href="schemes.html?category=agriculture">Farmer Welfare</a></li>
+                    <li><a href="schemes.html?category=women">Women & Child</a></li>
+                    <li><a href="schemes.html?category=financial">Banking & Loans</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Bhashini AI</h3>
+                <ul class="footer-links">
+                    <li><a href="https://bhashini.gov.in/" target="_blank">Bhashini Mission</a></li>
+                    <li><a href="https://myscheme.gov.in/" target="_blank">myScheme Official</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 SarthX Portal • Developed with Bhashini AI & myScheme Data Standards.</span>
+            <span>Made with <i class="fa-solid fa-heart" style="color: #ef4444;"></i> for Digital India</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/schemes-data.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/bhashini.js"></script>
+    <script>
+        window.addEventListener('languageChanged', () => {
+            if (document.getElementById('resultsSection') && document.getElementById('resultsSection').style.display === 'block') {
+                computeMatches();
+            }
+        });
+
+        const userProfile = {
+            gender: 'female',
+            age: 21,
+            state: 'All India',
+            area: 'rural',
+            caste: 'general',
+            occupation: 'student',
+            incomeNum: 100000,
+            incomeKey: 'bpl',
+            hasDisability: false,
+            landHolding: false,
+            hasGirlChild: false
+        };
+
+        function setupOptionContainer(containerId, stateKey, onSelect) {
+            const cards = document.querySelectorAll(`#${containerId} .option-card`);
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    cards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    const val = card.getAttribute('data-value');
+                    userProfile[stateKey] = val;
+                    if (onSelect) onSelect(card);
+                });
+            });
+        }
+
+        setupOptionContainer('genderOptions', 'gender');
+        setupOptionContainer('areaOptions', 'area');
+        setupOptionContainer('casteOptions', 'caste');
+        setupOptionContainer('occupationOptions', 'occupation');
+        setupOptionContainer('incomeOptions', 'incomeKey', (card) => {
+            userProfile.incomeNum = parseInt(card.getAttribute('data-num'), 10) || 100000;
+        });
+
+        function updateAgeDisplay(val) {
+            userProfile.age = parseInt(val, 10);
+            document.getElementById('ageDisplay').innerHTML = `${val} <span style="font-size: 1.5rem; color: #9ca3af;">Years</span>`;
+        }
+
+        document.getElementById('userDisabilityInput').addEventListener('change', (e) => {
+            userProfile.hasDisability = e.target.checked;
+        });
+        document.getElementById('userLandInput').addEventListener('change', (e) => {
+            userProfile.landHolding = e.target.checked;
+        });
+        document.getElementById('userGirlChildInput').addEventListener('change', (e) => {
+            userProfile.hasGirlChild = e.target.checked;
+        });
+
+        function nextStep(stepNum) {
+            document.querySelectorAll('.wizard-step').forEach(step => step.classList.remove('active'));
+            const targetStep = document.getElementById(`step${stepNum}`);
+            if (targetStep) targetStep.classList.add('active');
+
+            const percent = (stepNum / 7) * 100;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        function restartWizard() {
+            nextStep(1);
+        }
+
+        // Compute Matches with Direct Apply Actions
+        function computeMatches() {
+            userProfile.state = document.getElementById('userStateSelect').value;
+
+            const badgesDiv = document.getElementById('profileSummaryBadges');
+            badgesDiv.innerHTML = `
+                <span class="quick-tag"><i class="fa-solid fa-venus-mars"></i> ${userProfile.gender.toUpperCase()}</span>
+                <span class="quick-tag"><i class="fa-solid fa-cake-candles"></i> ${userProfile.age} Years</span>
+                <span class="quick-tag"><i class="fa-solid fa-location-dot"></i> ${userProfile.state} (${userProfile.area})</span>
+                <span class="quick-tag"><i class="fa-solid fa-users"></i> ${userProfile.caste.toUpperCase()}</span>
+                <span class="quick-tag"><i class="fa-solid fa-briefcase"></i> ${userProfile.occupation.toUpperCase()}</span>
+                <span class="quick-tag"><i class="fa-solid fa-wallet"></i> &le; ₹${userProfile.incomeNum.toLocaleString()}</span>
+                ${userProfile.hasDisability ? '<span class="quick-tag" style="color: #6366f1;"><i class="fa-solid fa-wheelchair"></i> Divyangjan</span>' : ''}
+                ${userProfile.landHolding ? '<span class="quick-tag" style="color: #22c55e;"><i class="fa-solid fa-tractor"></i> Landowner</span>' : ''}
+            `;
+
+            const eligibleSchemes = [];
+            const potentialSchemes = [];
+
+            window.SCHEMES_DATABASE.forEach(scheme => {
+                const crit = scheme.eligibilityCriteria;
+                let score = 0;
+                let totalFactors = 5;
+
+                if (userProfile.age >= crit.minAge && userProfile.age <= crit.maxAge) score += 1;
+                if (crit.gender === 'all' || crit.gender === userProfile.gender) score += 1;
+                if (crit.occupations.includes('all') || crit.occupations.includes(userProfile.occupation)) score += 1;
+                if (crit.caste.includes('all') || crit.caste.includes(userProfile.caste)) score += 1;
+                if (crit.maxIncome === null || userProfile.incomeNum <= crit.maxIncome) score += 1;
+
+                if (crit.disabilityRequired && !userProfile.hasDisability) score -= 2;
+                if (crit.landRequired && !userProfile.landHolding) score -= 2;
+                if (scheme.id === 'sukanya-samriddhi' && !userProfile.hasGirlChild && userProfile.gender !== 'female') score -= 2;
+
+                if (score >= totalFactors) {
+                    eligibleSchemes.push(scheme);
+                } else if (score >= totalFactors - 2) {
+                    potentialSchemes.push(scheme);
+                }
+            });
+
+            document.getElementById('eligibleCount').textContent = eligibleSchemes.length;
+            document.getElementById('potentialCount').textContent = potentialSchemes.length;
+
+            document.getElementById('eligibleGrid').innerHTML = renderSchemeCards(eligibleSchemes, true);
+            document.getElementById('potentialGrid').innerHTML = renderSchemeCards(potentialSchemes, false);
+
+            document.querySelectorAll('.wizard-step').forEach(step => step.classList.remove('active'));
+            document.getElementById('stepResults').classList.add('active');
+            document.getElementById('progressFill').style.width = '100%';
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+
+            if (window.bhashini) {
+                const lang = document.getElementById('languageSelect').value;
+                const feedbackText = `Evaluation complete. Found ${eligibleSchemes.length} schemes with 100% eligibility.`;
+                window.bhashini.speakText(feedbackText, lang);
+            }
+        }
+
+        function renderSchemeCards(list, isEligible) {
+            if (list.length === 0) {
+                return `<p style="color: var(--text-muted); font-size: 0.9rem; grid-column: 1 / -1; padding: 20px; background: var(--bg-dark); border-radius: 12px; text-align: center;">No schemes in this tier.</p>`;
+            }
+
+            const detailsLabel = window.t ? window.t('btn_check_details') : 'Details';
+            const applyLabel = window.t ? window.t('btn_direct_apply') : 'Direct Apply';
+            const matchLabel = isEligible ? '100% Match' : 'Likely Eligible';
+
+            return list.map(scheme => {
+                const applyLink = scheme.directApplyUrl || scheme.officialUrl;
+                const catName = window.t ? window.t('cat_' + scheme.category) : scheme.categoryName;
+                return `
+                    <div class="scheme-card" style="background: var(--bg-dark); border-color: ${isEligible ? 'rgba(16,185,129,0.3)' : 'var(--border-color)'};">
+                        <div>
+                            <div class="card-top">
+                                <span class="scheme-badge ${scheme.badgeClass}">${catName}</span>
+                                <span style="font-size: 0.75rem; color: ${isEligible ? 'var(--primary)' : '#f59e0b'}; font-weight: 700;">
+                                    <i class="fa-solid ${isEligible ? 'fa-circle-check' : 'fa-triangle-exclamation'}"></i> ${matchLabel}
+                                </span>
+                            </div>
+                            <div class="scheme-card-body">
+                                <h3>${scheme.title}</h3>
+                                <p>${scheme.brief}</p>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="benefit-row">
+                                <span class="benefit-tag">${scheme.benefit}</span>
+                            </div>
+                            <div class="card-actions-group">
+                                <button class="check-details-btn" onclick="openSchemeModal('${scheme.id}')">${detailsLabel}</button>
+                                <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="direct-apply-btn">
+                                    <span>${applyLabel}</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openSchemeModal(schemeId) {
+            const scheme = window.SCHEMES_DATABASE.find(s => s.id === schemeId);
+            if (!scheme) return;
+
+            document.getElementById('modalBadge').textContent = scheme.categoryName;
+            document.getElementById('modalBadge').className = `scheme-badge ${scheme.badgeClass}`;
+            document.getElementById('modalTitle').textContent = scheme.title;
+            document.getElementById('modalDesc').textContent = scheme.detailedDescription;
+            document.getElementById('modalBenefit').textContent = scheme.benefit;
+            document.getElementById('modalLevel').textContent = `${scheme.level} • ${scheme.state}`;
+            document.getElementById('modalEligibility').textContent = scheme.eligibilitySummary;
+            document.getElementById('modalAppProcess').textContent = scheme.applicationProcess;
+            
+            const applyLink = scheme.directApplyUrl || scheme.officialUrl;
+            document.getElementById('modalApplyBtn').href = applyLink;
+
+            const docsList = document.getElementById('modalDocsList');
+            docsList.innerHTML = scheme.documentsRequired.map(doc => `
+                <li><i class="fa-solid fa-check-circle"></i> <span>${doc}</span></li>
+            `).join('');
+
+            const ttsBtn = document.getElementById('modalTTSBtn');
+            ttsBtn.onclick = () => {
+                const currentLang = document.getElementById('languageSelect').value;
+                const speakText = `${scheme.title}. ${scheme.brief}. Key benefit is ${scheme.benefit}.`;
+                window.bhashini.speakText(speakText, currentLang);
+            };
+
+            document.getElementById('schemeModal').classList.add('active');
+        }
+
+        function closeSchemeModal() {
+            document.getElementById('schemeModal').classList.remove('active');
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+        }
+
+        // Handle OCR Scanner Query Parameters
+        function handleOcrUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromOcr = urlParams.get('fromOcr');
+
+            if (fromOcr === 'true') {
+                const age = parseInt(urlParams.get('age'), 10);
+                const gender = urlParams.get('gender');
+                const income = parseInt(urlParams.get('income'), 10);
+                const state = urlParams.get('state');
+
+                if (!isNaN(age)) {
+                    document.getElementById('ageInput').value = age;
+                    updateAgeDisplay(age);
+                }
+
+                if (gender) {
+                    userProfile.gender = gender;
+                    document.querySelectorAll('#genderOptions .option-card').forEach(c => {
+                        c.classList.toggle('selected', c.getAttribute('data-value') === gender);
+                    });
+                }
+
+                if (!isNaN(income)) {
+                    userProfile.incomeNum = income;
+                }
+
+                if (state) {
+                    const stateDropdown = document.getElementById('userStateSelect');
+                    for (let i = 0; i < stateDropdown.options.length; i++) {
+                        if (stateDropdown.options[i].value.toLowerCase().includes(state.toLowerCase())) {
+                            stateDropdown.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                document.getElementById('ocrAutofillBanner').style.display = 'flex';
+            }
+        }
+
+        // Mobile Menu
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const mobileDrawer = document.getElementById('mobileDrawer');
+        if (mobileBtn && mobileDrawer) {
+            mobileBtn.addEventListener('click', () => {
+                mobileDrawer.style.display = mobileDrawer.style.display === 'none' ? 'block' : 'none';
+            });
+        }
+
+        function openBhashiniModal() {
+            document.getElementById('bhashiniConfigModal').classList.add('active');
+        }
+        function closeBhashiniModal() {
+            document.getElementById('bhashiniConfigModal').classList.remove('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            handleOcrUrlParams();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SarthX - MyScheme National Welfare Portal with Bhashini AI</title>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ==============================================
+       EXACT DUAL-PILL NAVBAR
+       ============================================== -->
+    <header class="site-header">
+        <a href="index.html" class="nav-brand-pill">
+            <div class="brand-emblem"><i class="fa-solid fa-landmark-flag"></i></div>
+            <div class="brand-text-box">
+                <span class="brand-subtitle">GovTech • MyScheme</span>
+                <span class="nav-brand">Sarth<span>X</span></span>
+            </div>
+        </a>
+
+        <nav class="nav-pill-right">
+            <ul class="nav-links">
+                <li><a href="index.html" class="active" data-i18n="Home">Home</a></li>
+                <li><a href="schemes.html" data-i18n="Schemes">Schemes</a></li>
+                <li><a href="aimatcher.html" data-i18n="AI Matcher">AI Matcher</a></li>
+                <li><a href="calculator.html" data-i18n="Calculator">EMI Calculator</a></li>
+                <li><a href="ocr-scanner.html" data-i18n="OCR Scanner">OCR Scanner</a></li>
+                <li><a href="eligibility.html" data-i18n="Eligibility">Eligibility</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <select id="languageSelect" class="nav-lang-select" title="Choose Language (Bhashini)">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="bn">বাংলা (Bengali)</option>
+                    <option value="mr">मराठी (Marathi)</option>
+                    <option value="te">తెలుగు (Telugu)</option>
+                    <option value="ta">தமிழ் (Tamil)</option>
+                </select>
+
+                <button id="bhashiniSettingsBtn" class="nav-icon-btn" onclick="openBhashiniModal()" title="Bhashini AI API Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+
+                <button id="mobileMenuBtn" class="mobile-toggle" aria-label="Open navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobileDrawer" style="display: none; position: fixed; top: 80px; left: 20px; right: 20px; background: #171c19; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; z-index: 999; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px;">
+            <li><a href="index.html" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">Home</a></li>
+            <li><a href="schemes.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Schemes Directory</a></li>
+            <li><a href="aimatcher.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">AI Matcher</a></li>
+            <li><a href="calculator.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">EMI Calculator</a></li>
+            <li><a href="ocr-scanner.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">OCR Scanner</a></li>
+            <li><a href="eligibility.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Eligibility Matrix</a></li>
+        </ul>
+    </div>
+
+    <!-- ==============================================
+       HERO SECTION WITH BHASHINI VOICE SEARCH
+       ============================================== -->
+    <section class="hero-section">
+        <span class="hero-tag" data-i18n="hero_badge"><i class="fa-solid fa-shield-halved"></i> Official MyScheme GovTech Portal 2026</span>
+        <h1 class="hero-title" data-i18n="hero_title">Empowering Every Citizen with Direct Government Benefits</h1>
+        <p class="hero-subtitle" data-i18n="hero_subtitle">Discover, verify eligibility, calculate loans, and apply directly to 50+ Central & State welfare schemes powered by Bhashini AI in your regional language.</p>
+
+        <!-- Main Search Bar with Bhashini Voice -->
+        <div class="search-container">
+            <form id="heroSearchForm" class="search-box-wrapper" onsubmit="return handleHeroSearch(event)">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="heroSearchInput" class="search-input" data-i18n-placeholder="hero_search_placeholder" placeholder="Search by scheme name, benefit, farmer, student, loan, hospital...">
+                
+                <button type="button" id="heroMicBtn" class="bhashini-mic-btn" data-i18n-title="hero_mic_tooltip" title="Click to speak in your language">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+
+                <button type="submit" class="search-submit-btn">
+                    <span data-i18n="btn_search">Search</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div id="heroVoiceStatus" class="voice-status-bar"></div>
+
+            <!-- Quick Category Deep-Links & New Feature Badges -->
+            <div class="quick-tags">
+                <span style="font-size: 0.8rem; color: #6b7280; margin-right: 4px;" data-i18n="explore_title">Explore:</span>
+                <a href="schemes.html?category=students" class="quick-tag"><i class="fa-solid fa-graduation-cap"></i> <span data-i18n="cat_students">Education & Learning</span></a>
+                <a href="schemes.html?category=agriculture" class="quick-tag"><i class="fa-solid fa-tractor"></i> <span data-i18n="cat_agriculture">Agriculture & Rural</span></a>
+                <a href="schemes.html?category=women" class="quick-tag"><i class="fa-solid fa-person-dress"></i> <span data-i18n="cat_women">Women & Child</span></a>
+                <a href="calculator.html" class="quick-tag" style="border-color: rgba(59,130,246,0.3); color: #60a5fa;"><i class="fa-solid fa-calculator"></i> <span data-i18n="nav_calculator">EMI Calculator</span></a>
+                <a href="ocr-scanner.html" class="quick-tag" style="border-color: rgba(168,85,247,0.3); color: #c084fc;"><i class="fa-solid fa-id-card"></i> <span data-i18n="nav_ocr">OCR Scanner</span></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==============================================
+       BHASHINI AI CONVERSATIONAL SAHAYAK
+       ============================================== -->
+    <div class="section-container" style="padding-top: 0;">
+        <div class="bhashini-assistant-card">
+            <div class="assistant-header">
+                <div class="assistant-badge">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <div>
+                        <h3><span data-i18n="sahayak_badge">Bhashini AI Sahayak</span> <span id="bhashiniModeBadge">Active Mode</span></h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);" data-i18n="sahayak_desc">Tell our AI assistant who you are (e.g., 'I am a 20 year old female student needing scholarship' or 'Kisan hoon fasal bima chahiye'). We will parse your requirements instantly.</p>
+                    </div>
+                </div>
+                <button type="button" class="check-details-btn" onclick="openBhashiniModal()">
+                    <i class="fa-solid fa-sliders"></i> AI Engine Settings
+                </button>
+            </div>
+
+            <div class="assistant-input-group">
+                <input type="text" id="assistantInput" class="assistant-input" data-i18n-placeholder="sahayak_placeholder" placeholder="Type or speak your need (e.g., I am a small farmer looking for loan or insurance)...">
+                
+                <button type="button" id="assistantMicBtn" class="assistant-mic-btn" data-i18n-title="hero_mic_tooltip" title="Speak to Sahayak">
+                    <i class="fa-solid fa-microphone"></i>
+                </button>
+
+                <button type="button" id="assistantAskBtn" class="assistant-ask-btn" onclick="executeSahayakQuery()">
+                    <span data-i18n="sahayak_btn">Evaluate with AI</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <div id="sahayakStatus" class="voice-status-bar" style="justify-content: flex-start;"></div>
+
+            <!-- Dynamic AI Results Preview with Direct Apply Links -->
+            <div id="sahayakResultsContainer" style="display: none; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                <h4 style="font-size: 1.1rem; color: #ffffff; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+                    <span><i class="fa-solid fa-circle-check" style="color: var(--primary);"></i> <span data-i18n="matcher_result_title">Matched Schemes For Your Requirement</span>:</span>
+                    <a href="schemes.html" id="sahayakViewAllLink" style="font-size: 0.85rem; color: var(--primary);" data-i18n="view_all_schemes">View in Directory &rarr;</a>
+                </h4>
+                <div id="sahayakCardsGrid" class="schemes-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+       SCHEME CATEGORIES EXPLORER
+       ============================================== -->
+    <section class="section-container">
+        <div class="section-head">
+            <span class="section-tag" data-i18n="explore_title">MY SCHEME CATEGORIES</span>
+            <h2 class="section-title" data-i18n="explore_title">Explore Welfare Schemes by Sector</h2>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 10px auto 0 auto;" data-i18n="explore_subtitle">Browse tailored schemes curated across all major socio-economic categories</p>
+        </div>
+
+        <div class="categories-grid" id="categoriesGrid">
+            <!-- Dynamically populated from SCHEMES_METADATA -->
+        </div>
+    </section>
+
+    <!-- ==============================================
+       FEATURED WELFARE SCHEMES (WITH DIRECT APPLY)
+       ============================================== -->
+    <section class="section-container" style="background: rgba(255,255,255,0.01); border-radius: 24px;">
+        <div class="section-head" style="display: flex; align-items: flex-end; justify-content: space-between; text-align: left; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <span class="section-tag">NATIONWIDE PROGRAMMES</span>
+                <h2 class="section-title">Popular Welfare Schemes</h2>
+            </div>
+            <a href="schemes.html" class="search-submit-btn" style="padding: 10px 20px; font-size: 0.88rem;">
+                Explore All 50+ Schemes <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="schemes-grid" id="featuredSchemesGrid">
+            <!-- Loaded via JavaScript with Direct Apply Links -->
+        </div>
+    </section>
+
+    <!-- ==============================================
+       NEW TOOLS BANNER: OCR & EMI CALCULATOR
+       ============================================== -->
+    <section class="section-container">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+            <!-- EMI Calculator Teaser -->
+            <div class="category-card" style="padding: 30px; border-color: rgba(59,130,246,0.3);">
+                <div class="category-icon-box" style="background: rgba(59,130,246,0.15); color: #3b82f6;"><i class="fa-solid fa-calculator"></i></div>
+                <h3 style="font-size: 1.3rem; color: #fff;">Scheme EMI & Subsidy Calculator</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Calculate subsidized monthly EMIs for PM Mudra, PM SVANidhi, Vidyalaxmi Education Loans, and PMAY Home Loans.</p>
+                <a href="calculator.html" class="search-submit-btn" style="align-self: flex-start; padding: 8px 18px; font-size: 0.85rem; background: #3b82f6;">
+                    Launch Calculator <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <!-- OCR Document Scanner Teaser -->
+            <div class="category-card" style="padding: 30px; border-color: rgba(168,85,247,0.3);">
+                <div class="category-icon-box" style="background: rgba(168,85,247,0.15); color: #a855f7;"><i class="fa-solid fa-id-card"></i></div>
+                <h3 style="font-size: 1.3rem; color: #fff;">On-Device Document OCR Scanner</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">Snap or upload your Aadhaar, Ration Card, or Income Certificate. Our Tesseract OCR auto-fills your profile for instant scheme matching.</p>
+                <a href="ocr-scanner.html" class="search-submit-btn" style="align-self: flex-start; padding: 8px 18px; font-size: 0.85rem; background: #a855f7;">
+                    Scan Document <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==============================================
+       SCHEME DETAILS MODAL WITH BHASHINI TTS
+       ============================================== -->
+    <div class="modal-overlay" id="schemeModal">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeSchemeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <span class="scheme-badge badge-students" id="modalBadge">Central</span>
+                <div class="modal-title-row">
+                    <h3 class="modal-title" id="modalTitle">Scheme Title</h3>
+                    <button id="modalTTSBtn" class="tts-speak-btn" title="Listen in your language (Bhashini AI Voice)">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <p class="modal-desc" id="modalDesc">Detailed description...</p>
+            
+            <div class="modal-info-grid">
+                <div class="info-box">
+                    <span>Key Benefit</span>
+                    <p id="modalBenefit">₹0</p>
+                </div>
+                <div class="info-box">
+                    <span>Level & Scope</span>
+                    <p id="modalLevel">Central • All India</p>
+                </div>
+                <div class="info-box" style="grid-column: 1 / -1;">
+                    <span>Eligibility Criteria</span>
+                    <p id="modalEligibility" style="font-weight: 500; font-size: 0.9rem; line-height: 1.5;">Eligibility details...</p>
+                </div>
+            </div>
+
+            <h4 class="modal-section-title"><i class="fa-solid fa-file-shield" style="color: var(--primary);"></i> Documents Required</h4>
+            <ul class="modal-docs-list" id="modalDocsList"></ul>
+
+            <h4 class="modal-section-title"><i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> Application Process</h4>
+            <p id="modalAppProcess" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;"></p>
+
+            <a href="#" target="_blank" rel="noopener noreferrer" class="modal-action-btn" id="modalApplyBtn">
+                <span>Direct Apply on Official Government Portal</span>
+                <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left: 8px;"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Bhashini Config Modal -->
+    <div class="modal-overlay" id="bhashiniConfigModal">
+        <div class="modal-content" style="max-width: 580px;">
+            <button class="modal-close-btn" onclick="closeBhashiniModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <span class="scheme-badge" style="background: rgba(16,185,129,0.2); color: var(--primary);">MeitY • National Language Mission</span>
+                <h3 class="modal-title" style="margin-top: 8px;">Bhashini AI Configuration</h3>
+            </div>
+            
+            <p class="modal-desc">
+                Connect official MeitY Bhashini API credentials for neural translation, ASR speech recognition, and regional voice synthesis.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
+                <div>
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">Bhashini User ID</label>
+                    <input type="text" id="bhashiniUserId" style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; color: #fff;" placeholder="e.g. 748b99c...">
+                </div>
+
+                <div>
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">ULCA / Bhashini API Key</label>
+                    <input type="password" id="bhashiniApiKey" style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; color: #fff;" placeholder="e.g. 9f4e2...">
+                </div>
+
+                <div>
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">Pipeline ID (Optional)</label>
+                    <input type="text" id="bhashiniPipelineId" style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; color: #fff;" placeholder="Default pipeline will be used if blank">
+                </div>
+
+                <div>
+                    <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">Inference Pipeline Endpoint</label>
+                    <input type="text" id="bhashiniEndpoint" style="width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; color: #fff;" value="https://dhruva-api.bhashini.gov.in/services/inference/pipeline">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button type="button" class="wizard-btn-prev" onclick="resetBhashiniConfig()" style="flex: 1;">Reset</button>
+                <button type="button" class="modal-action-btn" onclick="saveBhashiniSettings()" style="flex: 2;">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div>
+                <a href="index.html" class="nav-brand-pill" style="display: inline-flex; margin-bottom: 16px;">
+                    <div class="brand-emblem"><i class="fa-solid fa-landmark-flag"></i></div>
+                    <span class="nav-brand">Sarth<span>X</span></span>
+                </a>
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; max-width: 360px;">
+                    An AI-enabled welfare empowerment platform bridging Indian citizens to verified social security programs under the Digital India & myScheme framework.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h3>Navigation</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="schemes.html">Explore All Schemes</a></li>
+                    <li><a href="aimatcher.html">AI Eligibility Matcher</a></li>
+                    <li><a href="calculator.html">EMI Calculator</a></li>
+                    <li><a href="ocr-scanner.html">OCR Document Scanner</a></li>
+                    <li><a href="eligibility.html">Document Matrix</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Key Sectors</h3>
+                <ul class="footer-links">
+                    <li><a href="schemes.html?category=students">Student Scholarships</a></li>
+                    <li><a href="schemes.html?category=agriculture">Farmer Welfare</a></li>
+                    <li><a href="schemes.html?category=women">Women & Child</a></li>
+                    <li><a href="schemes.html?category=financial">Banking & Loans</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Bhashini AI</h3>
+                <ul class="footer-links">
+                    <li><a href="javascript:void(0)" onclick="openBhashiniModal()">API Configuration</a></li>
+                    <li><a href="https://bhashini.gov.in/" target="_blank" rel="noopener">Bhashini Mission</a></li>
+                    <li><a href="https://myscheme.gov.in/" target="_blank" rel="noopener">myScheme Official</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 SarthX Portal • Developed with Bhashini AI & myScheme Data Standards.</span>
+            <span>Made with <i class="fa-solid fa-heart" style="color: #ef4444;"></i> for Digital India</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/schemes-data.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/bhashini.js"></script>
+    <script>
+        function initLandingPage() {
+            const categoriesGrid = document.getElementById('categoriesGrid');
+            if (categoriesGrid && window.SCHEMES_METADATA) {
+                const categories = window.SCHEMES_METADATA.categories.filter(c => c.id !== 'all');
+                categoriesGrid.innerHTML = categories.map(cat => {
+                    const catName = window.t ? window.t('cat_' + cat.id) : cat.name;
+                    const progText = window.t ? window.t('Programs Available') : 'Programs Available';
+                    return `
+                        <a href="schemes.html?category=${cat.id}" class="category-card">
+                            <div class="category-icon-box">
+                                <i class="fa-solid ${cat.icon}"></i>
+                            </div>
+                            <h4>${catName}</h4>
+                            <div class="category-count">
+                                <span>${cat.count} ${progText}</span>
+                                <i class="fa-solid fa-arrow-right" style="font-size: 0.8rem; color: var(--primary);"></i>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+            }
+
+            // Render Featured Schemes with Direct Apply Links
+            const featuredGrid = document.getElementById('featuredSchemesGrid');
+            if (featuredGrid && window.SCHEMES_DATABASE) {
+                const featured = window.SCHEMES_DATABASE.slice(0, 6);
+                const detailsLabel = window.t ? window.t('btn_check_details') : 'Details';
+                const applyLabel = window.t ? window.t('btn_direct_apply') : 'Direct Apply';
+                
+                featuredGrid.innerHTML = featured.map(scheme => {
+                    const applyLink = scheme.directApplyUrl || scheme.officialUrl;
+                    const catName = window.t ? window.t('cat_' + scheme.category) : scheme.categoryName;
+                    return `
+                        <div class="scheme-card">
+                            <div>
+                                <div class="card-top">
+                                    <span class="scheme-badge ${scheme.badgeClass}">${catName}</span>
+                                    <span style="font-size: 0.75rem; color: #9ca3af;"><i class="fa-solid fa-location-dot"></i> ${scheme.level}</span>
+                                </div>
+                                <div class="scheme-card-body">
+                                    <h3>${scheme.title}</h3>
+                                    <p>${scheme.brief}</p>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="benefit-row">
+                                    <span class="benefit-tag">${scheme.benefit}</span>
+                                </div>
+                                <div class="card-actions-group">
+                                    <button class="check-details-btn" onclick="openSchemeModal('${scheme.id}')">
+                                        <i class="fa-solid fa-circle-info"></i> ${detailsLabel}
+                                    </button>
+                                    <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="direct-apply-btn">
+                                        <span>${applyLabel}</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Mobile Menu Toggle
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+            const mobileDrawer = document.getElementById('mobileDrawer');
+            if (mobileBtn && mobileDrawer) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileDrawer.style.display = mobileDrawer.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+
+            setupVoiceControls();
+        }
+
+        // Re-render dynamic components on language change
+        window.addEventListener('languageChanged', () => {
+            initLandingPage();
+        });
+
+        function handleHeroSearch(e) {
+            e.preventDefault();
+            const query = document.getElementById('heroSearchInput').value.trim();
+            if (query) {
+                window.location.href = `schemes.html?search=${encodeURIComponent(query)}`;
+            }
+            return false;
+        }
+
+        function setupVoiceControls() {
+            const heroMicBtn = document.getElementById('heroMicBtn');
+            const heroInput = document.getElementById('heroSearchInput');
+            const heroStatus = document.getElementById('heroVoiceStatus');
+
+            const asstMicBtn = document.getElementById('assistantMicBtn');
+            const asstInput = document.getElementById('assistantInput');
+            const asstStatus = document.getElementById('sahayakStatus');
+
+            if (heroMicBtn && window.bhashini) {
+                heroMicBtn.addEventListener('click', () => {
+                    const langCode = document.getElementById('languageSelect').value + '-IN';
+                    window.bhashini.startVoiceRecognition({
+                        lang: langCode,
+                        onStart: () => {
+                            heroMicBtn.classList.add('listening');
+                            heroStatus.innerHTML = '<i class="fa-solid fa-circle-dot fa-beat"></i> Listening... Speak now in your language';
+                        },
+                        onResult: (res) => {
+                            heroInput.value = res.finalText || res.interimText;
+                            if (res.isFinal) {
+                                heroStatus.innerHTML = `Recognized: "${res.finalText}"`;
+                                setTimeout(() => {
+                                    handleHeroSearch(new Event('submit'));
+                                }, 1200);
+                            }
+                        },
+                        onError: (err) => {
+                            heroMicBtn.classList.remove('listening');
+                            heroStatus.innerText = 'Voice Error: ' + err;
+                        },
+                        onEnd: () => {
+                            heroMicBtn.classList.remove('listening');
+                        }
+                    });
+                });
+            }
+
+            if (asstMicBtn && window.bhashini) {
+                asstMicBtn.addEventListener('click', () => {
+                    const langCode = document.getElementById('languageSelect').value + '-IN';
+                    window.bhashini.startVoiceRecognition({
+                        lang: langCode,
+                        onStart: () => {
+                            asstMicBtn.classList.add('listening');
+                            asstStatus.innerHTML = '<i class="fa-solid fa-circle-dot fa-beat"></i> Listening to your requirement...';
+                        },
+                        onResult: (res) => {
+                            asstInput.value = res.finalText || res.interimText;
+                            if (res.isFinal) {
+                                asstStatus.innerHTML = `Understood: "${res.finalText}"`;
+                                executeSahayakQuery();
+                            }
+                        },
+                        onError: (err) => {
+                            asstMicBtn.classList.remove('listening');
+                            asstStatus.innerText = 'Voice Error: ' + err;
+                        },
+                        onEnd: () => {
+                            asstMicBtn.classList.remove('listening');
+                        }
+                    });
+                });
+            }
+        }
+
+        function executeSahayakQuery() {
+            const query = document.getElementById('assistantInput').value.trim();
+            if (!query) return;
+
+            const parsed = window.bhashini.parseCitizenQuery(query);
+            const container = document.getElementById('sahayakResultsContainer');
+            const grid = document.getElementById('sahayakCardsGrid');
+            const viewAll = document.getElementById('sahayakViewAllLink');
+
+            let matched = [];
+            if (parsed.targetCategory) {
+                matched = window.SCHEMES_DATABASE.filter(s => s.category === parsed.targetCategory);
+                viewAll.href = `schemes.html?category=${parsed.targetCategory}`;
+            } else {
+                matched = window.SCHEMES_DATABASE.filter(s => 
+                    s.title.toLowerCase().includes(query.toLowerCase()) || 
+                    s.brief.toLowerCase().includes(query.toLowerCase()) ||
+                    s.tags.some(t => query.toLowerCase().includes(t))
+                );
+                viewAll.href = `schemes.html?search=${encodeURIComponent(query)}`;
+            }
+
+            if (matched.length === 0) {
+                matched = window.SCHEMES_DATABASE.slice(0, 3);
+            }
+
+            const detailsLabel = window.t ? window.t('btn_check_details') : 'Details';
+            const applyLabel = window.t ? window.t('btn_direct_apply') : 'Direct Apply';
+
+            grid.innerHTML = matched.slice(0, 4).map(scheme => {
+                const applyLink = scheme.directApplyUrl || scheme.officialUrl;
+                const catName = window.t ? window.t('cat_' + scheme.category) : scheme.categoryName;
+                return `
+                    <div class="scheme-card" style="background: var(--bg-dark);">
+                        <div>
+                            <div class="card-top">
+                                <span class="scheme-badge ${scheme.badgeClass}">${catName}</span>
+                            </div>
+                            <div class="scheme-card-body">
+                                <h3 style="font-size: 1.1rem;">${scheme.title}</h3>
+                                <p style="font-size: 0.85rem;">${scheme.brief}</p>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="benefit-row">
+                                <span class="benefit-tag" style="font-size: 0.85rem;">${scheme.benefit}</span>
+                            </div>
+                            <div class="card-actions-group">
+                                <button class="check-details-btn" onclick="openSchemeModal('${scheme.id}')">${detailsLabel}</button>
+                                <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="direct-apply-btn">
+                                    <span>${applyLabel}</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.style.display = 'block';
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function openSchemeModal(schemeId) {
+            const scheme = window.SCHEMES_DATABASE.find(s => s.id === schemeId);
+            if (!scheme) return;
+
+            document.getElementById('modalBadge').textContent = scheme.categoryName;
+            document.getElementById('modalBadge').className = `scheme-badge ${scheme.badgeClass}`;
+            document.getElementById('modalTitle').textContent = scheme.title;
+            document.getElementById('modalDesc').textContent = scheme.detailedDescription;
+            document.getElementById('modalBenefit').textContent = scheme.benefit;
+            document.getElementById('modalLevel').textContent = `${scheme.level} • ${scheme.state}`;
+            document.getElementById('modalEligibility').textContent = scheme.eligibilitySummary;
+            document.getElementById('modalAppProcess').textContent = scheme.applicationProcess;
+            
+            const applyLink = scheme.directApplyUrl || scheme.officialUrl;
+            document.getElementById('modalApplyBtn').href = applyLink;
+
+            const docsList = document.getElementById('modalDocsList');
+            docsList.innerHTML = scheme.documentsRequired.map(doc => `
+                <li><i class="fa-solid fa-check-circle"></i> <span>${doc}</span></li>
+            `).join('');
+
+            const ttsBtn = document.getElementById('modalTTSBtn');
+            ttsBtn.onclick = () => {
+                const currentLang = document.getElementById('languageSelect').value;
+                const speakText = `${scheme.title}. ${scheme.brief}. Key benefit is ${scheme.benefit}. Eligibility: ${scheme.eligibilitySummary}`;
+                window.bhashini.speakText(speakText, currentLang);
+            };
+
+            document.getElementById('schemeModal').classList.add('active');
+        }
+
+        function closeSchemeModal() {
+            document.getElementById('schemeModal').classList.remove('active');
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+        }
+
+        function openBhashiniModal() {
+            document.getElementById('bhashiniConfigModal').classList.add('active');
+        }
+        function closeBhashiniModal() {
+            document.getElementById('bhashiniConfigModal').classList.remove('active');
+        }
+
+        function saveBhashiniSettings() {
+            const newConfig = {
+                userID: document.getElementById('bhashiniUserId').value.trim(),
+                ulcaApiKey: document.getElementById('bhashiniApiKey').value.trim(),
+                pipelineId: document.getElementById('bhashiniPipelineId').value.trim(),
+                inferenceUrl: document.getElementById('bhashiniEndpoint').value.trim()
+            };
+            window.bhashini.saveConfig(newConfig);
+            alert('Bhashini AI Settings Saved!');
+            closeBhashiniModal();
+        }
+
+        function resetBhashiniConfig() {
+            localStorage.removeItem('sarthx_bhashini_config');
+            window.bhashini.loadConfig();
+            openBhashiniModal();
+            alert('Reset to smart hybrid mode with browser fallback.');
+        }
+
+        document.addEventListener('DOMContentLoaded', initLandingPage);
+    </script>
+</body>
+</html>

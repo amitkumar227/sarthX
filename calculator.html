@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Scheme EMI & Subsidy Calculator - SarthX MyScheme</title>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ==============================================
+       EXACT DUAL-PILL NAVBAR
+       ============================================== -->
+    <header class="site-header">
+        <a href="index.html" class="nav-brand-pill">
+            <div class="brand-emblem"><i class="fa-solid fa-landmark-flag"></i></div>
+            <div class="brand-text-box">
+                <span class="brand-subtitle">GovTech • MyScheme</span>
+                <span class="nav-brand">Sarth<span>X</span></span>
+            </div>
+        </a>
+
+        <nav class="nav-pill-right">
+            <ul class="nav-links">
+                <li><a href="index.html" data-i18n="Home">Home</a></li>
+                <li><a href="schemes.html" data-i18n="Schemes">Schemes</a></li>
+                <li><a href="aimatcher.html" data-i18n="AI Matcher">AI Matcher</a></li>
+                <li><a href="calculator.html" class="active" data-i18n="Calculator">EMI Calculator</a></li>
+                <li><a href="ocr-scanner.html" data-i18n="OCR Scanner">OCR Scanner</a></li>
+                <li><a href="eligibility.html" data-i18n="Eligibility">Eligibility</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <select id="languageSelect" class="nav-lang-select" title="Choose Language (Bhashini)">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="bn">বাংলা (Bengali)</option>
+                    <option value="mr">मराठी (Marathi)</option>
+                    <option value="te">తెలుగు (Telugu)</option>
+                    <option value="ta">தமிழ் (Tamil)</option>
+                </select>
+
+                <button id="bhashiniSettingsBtn" class="nav-icon-btn" onclick="openBhashiniModal()" title="Bhashini AI Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+
+                <button id="mobileMenuBtn" class="mobile-toggle" aria-label="Open navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div id="mobileDrawer" style="display: none; position: fixed; top: 80px; left: 20px; right: 20px; background: #171c19; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; z-index: 999; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px;">
+            <li><a href="index.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Home</a></li>
+            <li><a href="schemes.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Schemes Directory</a></li>
+            <li><a href="aimatcher.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">AI Matcher</a></li>
+            <li><a href="calculator.html" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">EMI Calculator</a></li>
+            <li><a href="ocr-scanner.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">OCR Scanner</a></li>
+            <li><a href="eligibility.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Eligibility Matrix</a></li>
+        </ul>
+    </div>
+
+    <!-- ==============================================
+       MAIN CALCULATOR SECTION
+       ============================================== -->
+    <main class="schemes-page-wrapper">
+        <div class="section-container">
+            
+            <div class="section-head">
+                <span class="section-tag"><i class="fa-solid fa-calculator"></i> <span data-i18n="calc_badge">FINANCIAL SUBSIDY & CREDIT PLANNING</span></span>
+                <h1 class="section-title" data-i18n="calc_title">Government Scheme EMI & Subsidy Calculator</h1>
+                <p style="color: var(--text-muted); max-width: 720px; margin: 10px auto 0 auto;" data-i18n="calc_subtitle">
+                    Calculate monthly EMIs, interest savings, and government subventions for Mudra, SVANidhi, Vidyalaxmi, PMAY Housing, and Kisan Credit Card loans.
+                </p>
+            </div>
+
+            <!-- CALCULATOR GRID -->
+            <div class="calculator-grid">
+                
+                <!-- Input Controls Card -->
+                <div class="calculator-card">
+                    <span style="font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 12px;" data-i18n="calc_presets_title">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Select Official Scheme Preset:
+                    </span>
+                    
+                    <div class="calc-preset-tabs" id="presetTabs">
+                        <button type="button" class="preset-chip active" data-preset="mudra-kishore" data-i18n="preset_mudra_kishore">PM Mudra (Kishore)</button>
+                        <button type="button" class="preset-chip" data-preset="mudra-shishu" data-i18n="preset_mudra_shishu">PM Mudra (Shishu)</button>
+                        <button type="button" class="preset-chip" data-preset="svanidhi" data-i18n="preset_svanidhi">PM SVANidhi</button>
+                        <button type="button" class="preset-chip" data-preset="vidyalaxmi" data-i18n="preset_vidyalaxmi">PM Vidyalaxmi (Education)</button>
+                        <button type="button" class="preset-chip" data-preset="pmay" data-i18n="preset_pmay">PMAY-U 2.0 (Home Loan)</button>
+                        <button type="button" class="preset-chip" data-preset="kcc" data-i18n="preset_kcc">Kisan Credit Card (KCC)</button>
+                        <button type="button" class="preset-chip" data-preset="standup" data-i18n="preset_standup">Stand-Up India</button>
+                        <button type="button" class="preset-chip" data-preset="custom" data-i18n="Custom Loan">Custom Loan</button>
+                    </div>
+
+                    <!-- Loan Amount -->
+                    <div class="calc-field-group">
+                        <div class="calc-label-row">
+                            <span class="calc-label" data-i18n="calc_input_amount">Loan Amount (Principal)</span>
+                            <span class="calc-val-badge" id="amountBadge">₹3,00,000</span>
+                        </div>
+                        <input type="range" class="calc-slider" id="amountSlider" min="10000" max="5000000" step="5000" value="300000">
+                    </div>
+
+                    <!-- Interest Rate -->
+                    <div class="calc-field-group">
+                        <div class="calc-label-row">
+                            <span class="calc-label" data-i18n="calc_input_rate">Base Bank Interest Rate (% p.a.)</span>
+                            <span class="calc-val-badge" id="rateBadge">9.5%</span>
+                        </div>
+                        <input type="range" class="calc-slider" id="rateSlider" min="3.0" max="18.0" step="0.1" value="9.5">
+                    </div>
+
+                    <!-- Government Interest Subvention / Subsidy -->
+                    <div class="calc-field-group">
+                        <div class="calc-label-row">
+                            <span class="calc-label" data-i18n="calc_result_subsidy">Government Interest Subvention (%)</span>
+                            <span class="calc-val-badge" id="subventionBadge" style="color: #60a5fa; background: rgba(59,130,246,0.15);">0.0% Subsidized</span>
+                        </div>
+                        <input type="range" class="calc-slider" id="subventionSlider" min="0.0" max="7.0" step="0.5" value="0.0" style="accent-color: #3b82f6;">
+                        <span style="font-size: 0.78rem; color: #9ca3af;" id="subventionNote">Subvention lowers your effective interest rate paid to the bank.</span>
+                    </div>
+
+                    <!-- Loan Tenure -->
+                    <div class="calc-field-group">
+                        <div class="calc-label-row">
+                            <span class="calc-label" data-i18n="calc_input_tenure">Loan Tenure</span>
+                            <span class="calc-val-badge" id="tenureBadge">5 Years (60 Months)</span>
+                        </div>
+                        <input type="range" class="calc-slider" id="tenureSlider" min="6" max="240" step="6" value="60">
+                    </div>
+                </div>
+
+                <!-- Results Summary Card -->
+                <div class="calc-results-card">
+                    <div class="emi-highlight-box">
+                        <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;" data-i18n="calc_result_emi">
+                            Monthly EMI Payment
+                        </span>
+                        <div class="emi-amount-large" id="emiDisplay">₹6,300</div>
+                        <span style="font-size: 0.82rem; color: var(--primary);" id="effectiveRateText">
+                            Effective Interest Rate: 9.5%
+                        </span>
+                    </div>
+
+                    <div class="calc-summary-metrics">
+                        <div class="metric-item">
+                            <span data-i18n="calc_principal_share">Principal Loan Amount</span>
+                            <span id="summaryPrincipal">₹3,00,000</span>
+                        </div>
+                        <div class="metric-item">
+                            <span data-i18n="calc_result_interest">Total Interest Payable</span>
+                            <span id="summaryInterest" style="color: #f59e0b;">₹78,000</span>
+                        </div>
+                        <div class="metric-item">
+                            <span data-i18n="calc_result_total">Total Payment (Principal + Int)</span>
+                            <span id="summaryTotal">₹3,78,000</span>
+                        </div>
+                        <div class="metric-item" id="subsidyRow" style="display: none; background: rgba(16,185,129,0.1); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(16,185,129,0.25);">
+                            <span style="color: #a7f3d0;"><i class="fa-solid fa-gift"></i> <span data-i18n="calc_result_subsidy">Government Subsidy Savings</span></span>
+                            <span id="summarySubsidySavings" style="color: var(--primary);">₹0</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Principal vs Interest Split Bar -->
+                    <div class="split-bar-container">
+                        <div class="split-bar">
+                            <div class="split-principal" id="splitPrincipalBar" style="width: 79%;"></div>
+                        </div>
+                        <div class="split-legend">
+                            <span><i class="fa-solid fa-circle" style="color: var(--primary); font-size: 0.6rem;"></i> <span data-i18n="calc_principal_share">Principal</span>: <strong id="principalPercent">79%</strong></span>
+                            <span><i class="fa-solid fa-circle" style="color: #3b82f6; font-size: 0.6rem;"></i> <span data-i18n="calc_interest_share">Interest</span>: <strong id="interestPercent">21%</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Direct Apply CTA -->
+                    <a href="https://www.jansamarth.in/" target="_blank" rel="noopener noreferrer" class="modal-action-btn" id="calcApplyBtn">
+                        <span data-i18n="calc_apply_cta">Apply Online on Official Portal</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left: 8px;"></i>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Scheme Details Modal -->
+    <div class="modal-overlay" id="schemeModal">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeSchemeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <span class="scheme-badge" id="modalBadge">Central</span>
+                <div class="modal-title-row">
+                    <h3 class="modal-title" id="modalTitle">Scheme Title</h3>
+                    <button id="modalTTSBtn" class="tts-speak-btn" title="Listen in your language (Bhashini AI Voice)">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <p class="modal-desc" id="modalDesc">Detailed description...</p>
+            
+            <div class="modal-info-grid">
+                <div class="info-box">
+                    <span>Key Benefit</span>
+                    <p id="modalBenefit">₹0</p>
+                </div>
+                <div class="info-box">
+                    <span>Level & Scope</span>
+                    <p id="modalLevel">Central • All India</p>
+                </div>
+            </div>
+
+            <a href="#" target="_blank" rel="noopener noreferrer" class="modal-action-btn" id="modalApplyBtn">
+                <span>Proceed to Official Government Portal</span>
+                <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left: 8px;"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Bhashini Config Modal -->
+    <div class="modal-overlay" id="bhashiniConfigModal">
+        <div class="modal-content" style="max-width: 580px;">
+            <button class="modal-close-btn" onclick="closeBhashiniModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <span class="scheme-badge" style="background: rgba(16,185,129,0.2); color: var(--primary);">MeitY • National Language Mission</span>
+                <h3 class="modal-title" style="margin-top: 8px;">Bhashini AI Configuration</h3>
+            </div>
+            <p class="modal-desc">Configure official Bhashini credentials or use smart offline fallback.</p>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button type="button" class="wizard-btn-prev" onclick="closeBhashiniModal()" style="flex: 1;">Cancel</button>
+                <button type="button" class="modal-action-btn" onclick="closeBhashiniModal()" style="flex: 2;">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div>
+                <a href="index.html" class="nav-brand-pill" style="display: inline-flex; margin-bottom: 16px;">
+                    <div class="brand-emblem"><i class="fa-solid fa-landmark-flag"></i></div>
+                    <span class="nav-brand">Sarth<span>X</span></span>
+                </a>
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; max-width: 360px;">
+                    An AI-enabled welfare empowerment platform bridging Indian citizens to verified social security programs under the Digital India & myScheme framework.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h3>Navigation</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="schemes.html">Explore All Schemes</a></li>
+                    <li><a href="aimatcher.html">AI Eligibility Matcher</a></li>
+                    <li><a href="calculator.html">EMI Calculator</a></li>
+                    <li><a href="ocr-scanner.html">OCR Document Scanner</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Key Credit Schemes</h3>
+                <ul class="footer-links">
+                    <li><a href="https://www.jansamarth.in/" target="_blank">JanSamarth Portal</a></li>
+                    <li><a href="https://www.mudra.org.in/" target="_blank">PM Mudra Yojana</a></li>
+                    <li><a href="https://pmsvanidhi.mohua.gov.in/" target="_blank">PM SVANidhi</a></li>
+                    <li><a href="https://www.vidyalakshmi.co.in/" target="_blank">PM Vidyalaxmi</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Bhashini AI</h3>
+                <ul class="footer-links">
+                    <li><a href="https://bhashini.gov.in/" target="_blank">Bhashini Mission</a></li>
+                    <li><a href="https://myscheme.gov.in/" target="_blank">myScheme Official</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 SarthX Portal • Developed with Bhashini AI & myScheme Data Standards.</span>
+            <span>Made with <i class="fa-solid fa-heart" style="color: #ef4444;"></i> for Digital India</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/schemes-data.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/bhashini.js"></script>
+    <script>
+        window.addEventListener('languageChanged', () => {
+            calculateLoan();
+        });
+
+        // Preset Definitions
+        const SCHEME_PRESETS = {
+            'mudra-kishore': {
+                name: 'PM Mudra (Kishore)',
+                amount: 300000,
+                rate: 9.5,
+                subvention: 0.0,
+                tenure: 60,
+                applyUrl: 'https://www.jansamarth.in/business-activity-loans',
+                note: 'Collateral-free enterprise credit between ₹50,000 and ₹5 Lakhs.'
+            },
+            'mudra-shishu': {
+                name: 'PM Mudra (Shishu)',
+                amount: 50000,
+                rate: 8.5,
+                subvention: 0.0,
+                tenure: 36,
+                applyUrl: 'https://www.jansamarth.in/business-activity-loans',
+                note: 'Micro loans up to ₹50,000 for starting roadside shops and vendors.'
+            },
+            'svanidhi': {
+                name: 'PM SVANidhi',
+                amount: 20000,
+                rate: 10.0,
+                subvention: 7.0,
+                tenure: 12,
+                applyUrl: 'https://pmsvanidhi.mohua.gov.in/Home/PreApplication',
+                note: 'Street vendor loan with 7% government interest subsidy credited into bank.'
+            },
+            'vidyalaxmi': {
+                name: 'PM Vidyalaxmi',
+                amount: 750000,
+                rate: 9.5,
+                subvention: 3.0,
+                tenure: 84,
+                applyUrl: 'https://www.vidyalakshmi.co.in/Students/signup',
+                note: 'Collateral-free higher education loan with 3% interest subvention for top colleges.'
+            },
+            'pmay': {
+                name: 'PMAY-U 2.0 Home Loan',
+                amount: 2000000,
+                rate: 8.5,
+                subvention: 4.0,
+                tenure: 240,
+                applyUrl: 'https://pmaymis.gov.in/Open/Check_Aadhar_Existence.aspx',
+                note: 'Interest subvention of 4% on urban home loans up to ₹25 Lakhs.'
+            },
+            'kcc': {
+                name: 'Kisan Credit Card (KCC)',
+                amount: 200000,
+                rate: 7.0,
+                subvention: 3.0,
+                tenure: 36,
+                applyUrl: 'https://www.jansamarth.in/agri-infrastructure-loan-schemes',
+                note: 'Subsidized crop credit at an effective 4% interest rate upon timely repayment.'
+            },
+            'standup': {
+                name: 'Stand-Up India',
+                amount: 2500000,
+                rate: 8.5,
+                subvention: 0.0,
+                tenure: 84,
+                applyUrl: 'https://www.standupmitra.in/Login/Register',
+                note: 'Loans between ₹10 Lakh and ₹1 Crore to SC/ST and Women entrepreneurs.'
+            },
+            'custom': {
+                name: 'Custom Loan',
+                amount: 500000,
+                rate: 10.0,
+                subvention: 0.0,
+                tenure: 60,
+                applyUrl: 'https://www.jansamarth.in/',
+                note: 'Set custom loan amount, rate, and tenure.'
+            }
+        };
+
+        // DOM elements
+        const amountSlider = document.getElementById('amountSlider');
+        const rateSlider = document.getElementById('rateSlider');
+        const subventionSlider = document.getElementById('subventionSlider');
+        const tenureSlider = document.getElementById('tenureSlider');
+
+        const amountBadge = document.getElementById('amountBadge');
+        const rateBadge = document.getElementById('rateBadge');
+        const subventionBadge = document.getElementById('subventionBadge');
+        const tenureBadge = document.getElementById('tenureBadge');
+
+        const emiDisplay = document.getElementById('emiDisplay');
+        const effectiveRateText = document.getElementById('effectiveRateText');
+        const summaryPrincipal = document.getElementById('summaryPrincipal');
+        const summaryInterest = document.getElementById('summaryInterest');
+        const summaryTotal = document.getElementById('summaryTotal');
+        const subsidyRow = document.getElementById('subsidyRow');
+        const summarySubsidySavings = document.getElementById('summarySubsidySavings');
+
+        const splitPrincipalBar = document.getElementById('splitPrincipalBar');
+        const principalPercent = document.getElementById('principalPercent');
+        const interestPercent = document.getElementById('interestPercent');
+        const calcApplyBtn = document.getElementById('calcApplyBtn');
+        const presetButtons = document.querySelectorAll('.preset-chip');
+
+        // Calculate EMI Formula
+        function calculateEMI() {
+            const P = parseFloat(amountSlider.value);
+            const baseRate = parseFloat(rateSlider.value);
+            const subvention = parseFloat(subventionSlider.value);
+            const n = parseInt(tenureSlider.value, 10); // in months
+
+            // Effective rate after government subvention
+            const effectiveRate = Math.max(0.1, baseRate - subvention);
+            
+            // Monthly interest rate
+            const r = (effectiveRate / 12) / 100;
+            const rBase = (baseRate / 12) / 100;
+
+            // EMI = P * r * (1+r)^n / ((1+r)^n - 1)
+            const emi = Math.round((P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1));
+            const totalPayment = Math.round(emi * n);
+            const totalInterest = Math.max(0, totalPayment - P);
+
+            // Calculation without subvention for savings comparison
+            const baseEmi = Math.round((P * rBase * Math.pow(1 + rBase, n)) / (Math.pow(1 + rBase, n) - 1));
+            const baseTotalPayment = Math.round(baseEmi * n);
+            const subsidySavings = Math.max(0, baseTotalPayment - totalPayment);
+
+            // Update Badges
+            amountBadge.textContent = '₹' + P.toLocaleString('en-IN');
+            rateBadge.textContent = baseRate.toFixed(1) + '%';
+            subventionBadge.textContent = subvention > 0 ? `${subvention.toFixed(1)}% Subsidized` : '0% Subsidized';
+            
+            const years = Math.floor(n / 12);
+            const months = n % 12;
+            let tenureText = '';
+            if (years > 0) tenureText += `${years} Yr${years > 1 ? 's' : ''} `;
+            if (months > 0) tenureText += `${months} Mo${months > 1 ? 's' : ''} `;
+            tenureBadge.textContent = `${tenureText.trim()} (${n} Months)`;
+
+            // Update Displays
+            emiDisplay.textContent = '₹' + emi.toLocaleString('en-IN');
+            effectiveRateText.textContent = subvention > 0 
+                ? `Effective Subsidized Rate: ${effectiveRate.toFixed(1)}% (Base ${baseRate}%)`
+                : `Interest Rate: ${baseRate}% p.a.`;
+
+            summaryPrincipal.textContent = '₹' + P.toLocaleString('en-IN');
+            summaryInterest.textContent = '₹' + totalInterest.toLocaleString('en-IN');
+            summaryTotal.textContent = '₹' + totalPayment.toLocaleString('en-IN');
+
+            if (subvention > 0) {
+                subsidyRow.style.display = 'flex';
+                summarySubsidySavings.textContent = '₹' + subsidySavings.toLocaleString('en-IN');
+            } else {
+                subsidyRow.style.display = 'none';
+            }
+
+            // Split Bar
+            const pShare = Math.round((P / totalPayment) * 100);
+            const iShare = 100 - pShare;
+            splitPrincipalBar.style.width = pShare + '%';
+            principalPercent.textContent = pShare + '%';
+            interestPercent.textContent = iShare + '%';
+        }
+
+        // Apply Preset
+        function applyPreset(presetKey) {
+            const p = SCHEME_PRESETS[presetKey];
+            if (!p) return;
+
+            presetButtons.forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`.preset-chip[data-preset="${presetKey}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            amountSlider.value = p.amount;
+            rateSlider.value = p.rate;
+            subventionSlider.value = p.subvention;
+            tenureSlider.value = p.tenure;
+            calcApplyBtn.href = p.applyUrl;
+
+            document.getElementById('subventionNote').textContent = p.note;
+            calculateEMI();
+        }
+
+        // Setup Event Listeners
+        [amountSlider, rateSlider, subventionSlider, tenureSlider].forEach(slider => {
+            slider.addEventListener('input', calculateEMI);
+        });
+
+        presetButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                applyPreset(btn.getAttribute('data-preset'));
+            });
+        });
+
+        // Mobile Menu
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const mobileDrawer = document.getElementById('mobileDrawer');
+        if (mobileBtn && mobileDrawer) {
+            mobileBtn.addEventListener('click', () => {
+                mobileDrawer.style.display = mobileDrawer.style.display === 'none' ? 'block' : 'none';
+            });
+        }
+
+        function openBhashiniModal() {
+            document.getElementById('bhashiniConfigModal').classList.add('active');
+        }
+        function closeBhashiniModal() {
+            document.getElementById('bhashiniConfigModal').classList.remove('active');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            applyPreset('mudra-kishore');
+        });
+    </script>
+</body>
+</html>

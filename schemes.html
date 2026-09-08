@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welfare Schemes Directory - SarthX MyScheme Portal</title>
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ==============================================
+       EXACT DUAL-PILL NAVBAR
+       ============================================== -->
+    <header class="site-header">
+        <a href="index.html" class="nav-brand-pill">
+            <div class="brand-emblem"><i class="fa-solid fa-landmark-flag"></i></div>
+            <div class="brand-text-box">
+                <span class="brand-subtitle">GovTech • MyScheme</span>
+                <span class="nav-brand">Sarth<span>X</span></span>
+            </div>
+        </a>
+
+        <nav class="nav-pill-right">
+            <ul class="nav-links">
+                <li><a href="index.html" data-i18n="Home">Home</a></li>
+                <li><a href="schemes.html" class="active" data-i18n="Schemes">Schemes</a></li>
+                <li><a href="aimatcher.html" data-i18n="AI Matcher">AI Matcher</a></li>
+                <li><a href="calculator.html" data-i18n="Calculator">EMI Calculator</a></li>
+                <li><a href="ocr-scanner.html" data-i18n="OCR Scanner">OCR Scanner</a></li>
+                <li><a href="eligibility.html" data-i18n="Eligibility">Eligibility</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <select id="languageSelect" class="nav-lang-select" title="Choose Language (Bhashini)">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="bn">বাংলা (Bengali)</option>
+                    <option value="mr">मराठी (Marathi)</option>
+                    <option value="te">తెలుగు (Telugu)</option>
+                    <option value="ta">தமிழ் (Tamil)</option>
+                </select>
+
+                <button id="bhashiniSettingsBtn" class="nav-icon-btn" onclick="openBhashiniModal()" title="Bhashini AI Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+
+                <button id="mobileMenuBtn" class="mobile-toggle" aria-label="Open navigation menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div id="mobileDrawer" style="display: none; position: fixed; top: 80px; left: 20px; right: 20px; background: #171c19; border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; z-index: 999; box-shadow: 0 20px 40px rgba(0,0,0,0.8);">
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 16px;">
+            <li><a href="index.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Home</a></li>
+            <li><a href="schemes.html" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">Schemes Directory</a></li>
+            <li><a href="aimatcher.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">AI Matcher</a></li>
+            <li><a href="calculator.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">EMI Calculator</a></li>
+            <li><a href="ocr-scanner.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">OCR Scanner</a></li>
+            <li><a href="eligibility.html" style="font-size: 1.1rem; font-weight: 600; color: #fff;">Eligibility Matrix</a></li>
+        </ul>
+    </div>
+
+    <!-- ==============================================
+       SCHEMES DIRECTORY MAIN CONTAINER
+       ============================================== -->
+    <main class="schemes-page-wrapper">
+        <div class="section-container">
+            
+            <div class="section-head" style="margin-bottom: 30px;">
+                <span class="section-tag"><i class="fa-solid fa-database"></i> <span data-i18n="badge_central">CENTRAL & STATE SCHEMES DIRECTORY</span></span>
+                <h1 class="section-title" data-i18n="dir_title">Government Schemes Directory</h1>
+                <p style="color: var(--text-muted); max-width: 720px; margin: 10px auto 0 auto;" data-i18n="dir_subtitle">
+                    Search, filter, and apply directly to 50+ central and state schemes with real-time verified links.
+                </p>
+            </div>
+
+            <!-- Controls: Search, State Filter, Beneficiary Filter -->
+            <div class="schemes-controls-wrapper">
+                <div class="schemes-search-bar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="schemeSearchInput" data-i18n-placeholder="dir_search_placeholder" placeholder="Search schemes by title, keyword, department, or benefit...">
+                    </div>
+
+                    <!-- Bhashini Voice Search in Directory -->
+                    <button type="button" id="directoryMicBtn" class="bhashini-mic-btn" style="border-radius: var(--radius-md); width: 48px; height: 48px;" data-i18n-title="hero_mic_tooltip" title="Voice Search with Bhashini">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+
+                    <!-- State Selector -->
+                    <select id="stateFilterSelect" class="filter-select">
+                        <option value="all">All States & UTs</option>
+                        <option value="All India">All India (National)</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="West Bengal">West Bengal</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Delhi">Delhi</option>
+                    </select>
+
+                    <!-- Level Filter -->
+                    <select id="levelFilterSelect" class="filter-select">
+                        <option value="all" data-i18n="dir_level_all">All Levels</option>
+                        <option value="Central" data-i18n="dir_level_central">Central Government</option>
+                        <option value="State" data-i18n="dir_level_state">State Government</option>
+                    </select>
+                </div>
+
+                <div id="directoryVoiceStatus" class="voice-status-bar" style="justify-content: flex-start;"></div>
+
+                <!-- Category Tabs (Dynamically Active based on URL param or clicks) -->
+                <div class="category-filter-tabs" id="categoryFilterTabs">
+                    <button class="filter-tab-btn active" data-category="all" data-i18n="cat_all">All Schemes</button>
+                    <button class="filter-tab-btn" data-category="agriculture" data-i18n="cat_agriculture"><i class="fa-solid fa-tractor"></i> Agriculture</button>
+                    <button class="filter-tab-btn" data-category="students" data-i18n="cat_students"><i class="fa-solid fa-graduation-cap"></i> Students</button>
+                    <button class="filter-tab-btn" data-category="financial" data-i18n="cat_financial"><i class="fa-solid fa-landmark"></i> Banking & Finance</button>
+                    <button class="filter-tab-btn" data-category="health" data-i18n="cat_health"><i class="fa-solid fa-heart-pulse"></i> Healthcare</button>
+                    <button class="filter-tab-btn" data-category="housing" data-i18n="cat_housing"><i class="fa-solid fa-house"></i> Housing</button>
+                    <button class="filter-tab-btn" data-category="women" data-i18n="cat_women"><i class="fa-solid fa-person-dress"></i> Women & Child</button>
+                    <button class="filter-tab-btn" data-category="skills" data-i18n="cat_skills"><i class="fa-solid fa-briefcase"></i> Skills & Jobs</button>
+                    <button class="filter-tab-btn" data-category="social" data-i18n="cat_social"><i class="fa-solid fa-hand-holding-heart"></i> Social Welfare</button>
+                    <button class="filter-tab-btn" data-category="business" data-i18n="cat_business"><i class="fa-solid fa-chart-line"></i> Business & MSME</button>
+                </div>
+            </div>
+
+            <!-- Schemes Count Banner -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding: 0 4px;">
+                <span id="resultsCountText" style="font-size: 0.95rem; font-weight: 600; color: var(--text-muted);">
+                    Showing all schemes
+                </span>
+                <span style="font-size: 0.85rem; color: #6b7280;">
+                    <i class="fa-solid fa-bolt" style="color: var(--primary);"></i> Live Real-Time Filtering & Direct Apply
+                </span>
+            </div>
+
+            <!-- Dynamic Schemes Cards Grid -->
+            <div class="schemes-grid" id="schemesGrid">
+                <!-- Injected via JavaScript with Direct Apply Links -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ==============================================
+       SCHEME DETAILS MODAL WITH BHASHINI TTS
+       ============================================== -->
+    <div class="modal-overlay" id="schemeModal">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeSchemeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <span class="scheme-badge" id="modalBadge">Central</span>
+                <div class="modal-title-row">
+                    <h3 class="modal-title" id="modalTitle">Scheme Title</h3>
+                    <button id="modalTTSBtn" class="tts-speak-btn" title="Listen in your language (Bhashini AI Voice)">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <p class="modal-desc" id="modalDesc">Detailed description...</p>
+            
+            <div class="modal-info-grid">
+                <div class="info-box">
+                    <span>Key Benefit</span>
+                    <p id="modalBenefit">₹0</p>
+                </div>
+                <div class="info-box">
+                    <span>Scope & Jurisdiction</span>
+                    <p id="modalLevel">Central • All India</p>
+                </div>
+                <div class="info-box" style="grid-column: 1 / -1;">
+                    <span>Eligibility Criteria</span>
+                    <p id="modalEligibility" style="font-weight: 500; font-size: 0.9rem; line-height: 1.5;">Eligibility details...</p>
+                </div>
+            </div>
+
+            <h4 class="modal-section-title"><i class="fa-solid fa-file-shield" style="color: var(--primary);"></i> Documents Required</h4>
+            <ul class="modal-docs-list" id="modalDocsList"></ul>
+
+            <h4 class="modal-section-title"><i class="fa-solid fa-circle-info" style="color: var(--primary);"></i> Application Process</h4>
+            <p id="modalAppProcess" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;"></p>
+
+            <a href="#" target="_blank" rel="noopener noreferrer" class="modal-action-btn" id="modalApplyBtn">
+                <span>Direct Apply on Official Government Portal</span>
+                <i class="fa-solid fa-arrow-up-right-from-square" style="margin-left: 8px;"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- ==============================================
+       BHASHINI API SETTINGS MODAL
+       ============================================== -->
+    <div class="modal-overlay" id="bhashiniConfigModal">
+        <div class="modal-content" style="max-width: 580px;">
+            <button class="modal-close-btn" onclick="closeBhashiniModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <span class="scheme-badge" style="background: rgba(16,185,129,0.2); color: var(--primary);">MeitY • National Language Mission</span>
+                <h3 class="modal-title" style="margin-top: 8px;">Bhashini AI Configuration</h3>
+            </div>
+            
+            <p class="modal-desc">Configure official Bhashini credentials or use smart offline fallback.</p>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button type="button" class="wizard-btn-prev" onclick="closeBhashiniModal()" style="flex: 1;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div>
+                <a href="index.html" class="nav-brand-pill" style="display: inline-flex; margin-bottom: 16px;">
+                    <div class="brand-emblem"><i class="fa-solid fa-landmark-flag"></i></div>
+                    <span class="nav-brand">Sarth<span>X</span></span>
+                </a>
+                <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; max-width: 360px;">
+                    An AI-enabled welfare empowerment platform bridging Indian citizens to verified social security programs under the Digital India & myScheme framework.
+                </p>
+            </div>
+
+            <div class="footer-col">
+                <h3>Navigation</h3>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="schemes.html">Explore All Schemes</a></li>
+                    <li><a href="aimatcher.html">AI Eligibility Matcher</a></li>
+                    <li><a href="calculator.html">EMI Calculator</a></li>
+                    <li><a href="ocr-scanner.html">OCR Document Scanner</a></li>
+                    <li><a href="eligibility.html">Document Matrix</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Key Sectors</h3>
+                <ul class="footer-links">
+                    <li><a href="schemes.html?category=students">Student Scholarships</a></li>
+                    <li><a href="schemes.html?category=agriculture">Farmer Welfare</a></li>
+                    <li><a href="schemes.html?category=women">Women & Child</a></li>
+                    <li><a href="schemes.html?category=financial">Banking & Loans</a></li>
+                    <li><a href="schemes.html?category=skills">Skills & Jobs</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h3>Bhashini AI</h3>
+                <ul class="footer-links">
+                    <li><a href="https://bhashini.gov.in/" target="_blank">Bhashini Mission</a></li>
+                    <li><a href="https://myscheme.gov.in/" target="_blank">myScheme Official</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 SarthX Portal • Developed with Bhashini AI & myScheme Data Standards.</span>
+            <span>Made with <i class="fa-solid fa-heart" style="color: #ef4444;"></i> for Digital India</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/schemes-data.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/bhashini.js"></script>
+    <script>
+        let activeCategory = 'all';
+        let activeSearch = '';
+        let activeState = 'all';
+        let activeLevel = 'all';
+
+        const schemesGrid = document.getElementById('schemesGrid');
+        const searchInput = document.getElementById('schemeSearchInput');
+        const stateSelect = document.getElementById('stateFilterSelect');
+        const levelSelect = document.getElementById('levelFilterSelect');
+        const filterButtons = document.querySelectorAll('.filter-tab-btn');
+        const resultsCountText = document.getElementById('resultsCountText');
+
+        // Render Schemes Function
+        function renderSchemes() {
+            schemesGrid.innerHTML = '';
+
+            const filtered = window.SCHEMES_DATABASE.filter(scheme => {
+                const matchCategory = (activeCategory === 'all') || (scheme.category === activeCategory);
+                const matchState = (activeState === 'all') || 
+                                   (scheme.state === 'All India') || 
+                                   (scheme.state.toLowerCase() === activeState.toLowerCase());
+                const matchLevel = (activeLevel === 'all') || (scheme.level === activeLevel);
+
+                const q = activeSearch.toLowerCase().trim();
+                const matchSearch = !q || 
+                    scheme.title.toLowerCase().includes(q) || 
+                    scheme.brief.toLowerCase().includes(q) || 
+                    scheme.detailedDescription.toLowerCase().includes(q) || 
+                    scheme.categoryName.toLowerCase().includes(q) ||
+                    scheme.tags.some(t => t.toLowerCase().includes(q));
+
+                return matchCategory && matchState && matchLevel && matchSearch;
+            });
+
+            const countTemplate = window.t ? window.t('schemes_count_text') : 'Showing {count} Government Schemes';
+            resultsCountText.textContent = countTemplate.replace('{count}', filtered.length);
+
+            if (filtered.length === 0) {
+                const noFound = window.t ? window.t('no_schemes_found') : 'No matching schemes found';
+                const noDesc = window.t ? window.t('no_schemes_desc') : 'Try clearing filters or search for another keyword like "Kisan", "Scholarship", or "Mudra".';
+                const resetText = window.t ? window.t('btn_clear') : 'Reset All Filters';
+                schemesGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                        <i class="fa-solid fa-filter-circle-xmark" style="font-size: 3rem; color: #6b7280; margin-bottom: 16px;"></i>
+                        <h3 style="font-size: 1.4rem; color: #fff; margin-bottom: 8px;">${noFound}</h3>
+                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">${noDesc}</p>
+                        <button class="search-submit-btn" style="margin: 0 auto;" onclick="resetAllFilters()">${resetText}</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const detailsLabel = window.t ? window.t('btn_check_details') : 'Details';
+            const applyLabel = window.t ? window.t('btn_direct_apply') : 'Direct Apply';
+
+            // Render Cards with BOTH Check Details and Direct Apply Buttons
+            filtered.forEach(scheme => {
+                const card = document.createElement('div');
+                card.className = 'scheme-card';
+                const applyLink = scheme.directApplyUrl || scheme.officialUrl;
+                const catName = window.t ? window.t('cat_' + scheme.category) : scheme.categoryName;
+
+                card.innerHTML = `
+                    <div>
+                        <div class="card-top">
+                            <span class="scheme-badge ${scheme.badgeClass}">${catName}</span>
+                            <span style="font-size: 0.75rem; color: #9ca3af;"><i class="fa-solid fa-location-dot"></i> ${scheme.level}</span>
+                        </div>
+                        <div class="scheme-card-body">
+                            <h3>${scheme.title}</h3>
+                            <p>${scheme.brief}</p>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="benefit-row">
+                            <span class="benefit-tag">${scheme.benefit}</span>
+                        </div>
+                        <div class="card-actions-group">
+                            <button class="check-details-btn" onclick="openSchemeModal('${scheme.id}')">
+                                <i class="fa-solid fa-circle-info"></i> ${detailsLabel}
+                            </button>
+                            <a href="${applyLink}" target="_blank" rel="noopener noreferrer" class="direct-apply-btn" title="Open official ${scheme.title} application form">
+                                <span>${applyLabel}</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+                schemesGrid.appendChild(card);
+            });
+        }
+
+        window.addEventListener('languageChanged', () => {
+            renderSchemes();
+        });
+
+        function resetAllFilters() {
+            activeCategory = 'all';
+            activeSearch = '';
+            activeState = 'all';
+            activeLevel = 'all';
+            searchInput.value = '';
+            stateSelect.value = 'all';
+            levelSelect.value = 'all';
+
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            const allBtn = document.querySelector('.filter-tab-btn[data-category="all"]');
+            if (allBtn) allBtn.classList.add('active');
+
+            renderSchemes();
+        }
+
+        // URL Parameters Handler (e.g. ?category=student, ?category=farmer)
+        function handleUrlParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const rawCategory = (urlParams.get('category') || '').toLowerCase().trim();
+            const rawSearch = urlParams.get('search');
+            const rawState = urlParams.get('state');
+
+            const categoryAliasMap = {
+                'student': 'students',
+                'students': 'students',
+                'scholarship': 'students',
+                'education': 'students',
+                'farmer': 'agriculture',
+                'kisan': 'agriculture',
+                'agriculture': 'agriculture',
+                'financial': 'financial',
+                'finance': 'financial',
+                'loan': 'financial',
+                'mudra': 'financial',
+                'women': 'women',
+                'woman': 'women',
+                'health': 'health',
+                'housing': 'housing',
+                'skills': 'skills',
+                'social': 'social',
+                'business': 'business'
+            };
+
+            const targetCategory = categoryAliasMap[rawCategory];
+
+            if (targetCategory) {
+                activeCategory = targetCategory;
+                filterButtons.forEach(b => b.classList.remove('active'));
+                const matchedBtn = document.querySelector(`.filter-tab-btn[data-category="${targetCategory}"]`);
+                if (matchedBtn) matchedBtn.classList.add('active');
+            } else if (rawCategory) {
+                activeSearch = rawCategory;
+                searchInput.value = rawCategory;
+            }
+
+            if (rawSearch) {
+                activeSearch = rawSearch;
+                searchInput.value = rawSearch;
+            }
+
+            if (rawState) {
+                activeState = rawState;
+                stateSelect.value = rawState;
+            }
+
+            renderSchemes();
+        }
+
+        function setupEventListeners() {
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    activeCategory = btn.getAttribute('data-category');
+                    renderSchemes();
+                });
+            });
+
+            let debounceTimer;
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    activeSearch = e.target.value;
+                    renderSchemes();
+                }, 200);
+            });
+
+            stateSelect.addEventListener('change', (e) => {
+                activeState = e.target.value;
+                renderSchemes();
+            });
+
+            levelSelect.addEventListener('change', (e) => {
+                activeLevel = e.target.value;
+                renderSchemes();
+            });
+
+            // Directory Bhashini Voice Search
+            const dirMicBtn = document.getElementById('directoryMicBtn');
+            const dirVoiceStatus = document.getElementById('directoryVoiceStatus');
+
+            if (dirMicBtn && window.bhashini) {
+                dirMicBtn.addEventListener('click', () => {
+                    const langCode = document.getElementById('languageSelect').value + '-IN';
+                    window.bhashini.startVoiceRecognition({
+                        lang: langCode,
+                        onStart: () => {
+                            dirMicBtn.classList.add('listening');
+                            dirVoiceStatus.innerHTML = '<i class="fa-solid fa-circle-dot fa-beat"></i> Listening... Speak scheme keyword in your language';
+                        },
+                        onResult: (res) => {
+                            searchInput.value = res.finalText || res.interimText;
+                            activeSearch = searchInput.value;
+                            renderSchemes();
+                            if (res.isFinal) {
+                                dirVoiceStatus.innerHTML = `Searching for: "${res.finalText}"`;
+                            }
+                        },
+                        onError: (err) => {
+                            dirMicBtn.classList.remove('listening');
+                            dirVoiceStatus.innerText = 'Voice Error: ' + err;
+                        },
+                        onEnd: () => {
+                            dirMicBtn.classList.remove('listening');
+                        }
+                    });
+                });
+            }
+
+            // Mobile Menu
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+            const mobileDrawer = document.getElementById('mobileDrawer');
+            if (mobileBtn && mobileDrawer) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileDrawer.style.display = mobileDrawer.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+        }
+
+        function openSchemeModal(schemeId) {
+            const scheme = window.SCHEMES_DATABASE.find(s => s.id === schemeId);
+            if (!scheme) return;
+
+            document.getElementById('modalBadge').textContent = scheme.categoryName;
+            document.getElementById('modalBadge').className = `scheme-badge ${scheme.badgeClass}`;
+            document.getElementById('modalTitle').textContent = scheme.title;
+            document.getElementById('modalDesc').textContent = scheme.detailedDescription;
+            document.getElementById('modalBenefit').textContent = scheme.benefit;
+            document.getElementById('modalLevel').textContent = `${scheme.level} • ${scheme.state}`;
+            document.getElementById('modalEligibility').textContent = scheme.eligibilitySummary;
+            document.getElementById('modalAppProcess').textContent = scheme.applicationProcess;
+            
+            const applyLink = scheme.directApplyUrl || scheme.officialUrl;
+            document.getElementById('modalApplyBtn').href = applyLink;
+
+            const docsList = document.getElementById('modalDocsList');
+            docsList.innerHTML = scheme.documentsRequired.map(doc => `
+                <li><i class="fa-solid fa-check-circle"></i> <span>${doc}</span></li>
+            `).join('');
+
+            const ttsBtn = document.getElementById('modalTTSBtn');
+            ttsBtn.onclick = () => {
+                const currentLang = document.getElementById('languageSelect').value;
+                const speakText = `${scheme.title}. ${scheme.brief}. Key benefit is ${scheme.benefit}. Eligibility: ${scheme.eligibilitySummary}`;
+                window.bhashini.speakText(speakText, currentLang);
+            };
+
+            document.getElementById('schemeModal').classList.add('active');
+        }
+
+        function closeSchemeModal() {
+            document.getElementById('schemeModal').classList.remove('active');
+            if (window.speechSynthesis) window.speechSynthesis.cancel();
+        }
+
+        function openBhashiniModal() {
+            document.getElementById('bhashiniConfigModal').classList.add('active');
+        }
+        function closeBhashiniModal() {
+            document.getElementById('bhashiniConfigModal').classList.remove('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            handleUrlParameters();
+        });
+    </script>
+</body>
+</html>
