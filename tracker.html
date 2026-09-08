@@ -95,7 +95,7 @@
             </div>
 
             <!-- Search Panel -->
-            <div class="tracker-search-card">
+            <form onsubmit="handleTrackerSubmit(event); return false;" class="tracker-search-card">
                 <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">
                     <i class="fa-solid fa-magnifying-glass" style="color: var(--primary);"></i> Track by Reference ID or Mobile
                 </h3>
@@ -104,14 +104,44 @@
                 </p>
 
                 <div class="tracker-search-input-group">
-                    <input type="text" id="trackerSearchInput" class="form-input" placeholder="Enter Reference ID (SARTHX-...) or Phone..." style="flex: 1;">
-                    <button type="button" class="btn-auto-fill-gov" onclick="performTrackerSearch()" style="padding: 0 24px; border-radius: var(--radius-md); flex: none;">
+                    <input type="text" id="trackerSearchInput" class="form-input" placeholder="Enter Reference ID (SARTHX-...) or Phone..." style="flex: 1;" autocomplete="off">
+                    <button type="submit" class="btn-auto-fill-gov" style="padding: 0 24px; border-radius: var(--radius-md); flex: none;">
                         <i class="fa-solid fa-arrow-right"></i> Track
                     </button>
                     <button type="button" class="check-details-btn" onclick="resetTrackerSearch()" style="padding: 0 16px; border-radius: var(--radius-md); flex: none;">
                         Reset
                     </button>
                 </div>
+
+                <!-- Quick Sample Search Pills -->
+                <div class="tracker-sample-pills">
+                    <span style="font-size: 0.76rem; color: var(--text-muted); font-weight: 700;">Try Sample:</span>
+                    <button type="button" class="tracker-sample-btn" onclick="quickSampleSearch('SARTHX-GOV-2026-SVAN-48291')">
+                        <i class="fa-solid fa-bolt" style="color: #10b981;"></i> PM SVANidhi (Approved)
+                    </button>
+                    <button type="button" class="tracker-sample-btn" onclick="quickSampleSearch('SARTHX-GOV-2026-MUDR-19042')">
+                        <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> PM Mudra Loan (Scrutiny)
+                    </button>
+                    <button type="button" class="tracker-sample-btn" onclick="quickSampleSearch('9876543210')">
+                        <i class="fa-solid fa-mobile-screen" style="color: #3b82f6;"></i> Phone (9876543210)
+                    </button>
+                </div>
+            </form>
+
+            <!-- Status Filter Tabs -->
+            <div class="tracker-filter-tabs" id="trackerFilterTabs">
+                <button type="button" class="tracker-tab-pill active" onclick="filterByStage('all', this)">
+                    <i class="fa-solid fa-layer-group"></i> All Applications (<span id="countAll">2</span>)
+                </button>
+                <button type="button" class="tracker-tab-pill" onclick="filterByStage('scrutiny', this)">
+                    <i class="fa-solid fa-spinner"></i> In Scrutiny (<span id="countScrutiny">1</span>)
+                </button>
+                <button type="button" class="tracker-tab-pill" onclick="filterByStage('approved', this)">
+                    <i class="fa-solid fa-circle-check"></i> Approved (<span id="countApproved">1</span>)
+                </button>
+                <button type="button" class="tracker-tab-pill" onclick="filterByStage('disbursed', this)">
+                    <i class="fa-solid fa-money-bill-transfer"></i> DBT Disbursed (<span id="countDisbursed">0</span>)
+                </button>
             </div>
 
             <!-- Active Applications List -->
@@ -299,43 +329,135 @@
             });
         }
 
+        let currentStageFilter = 'all';
+        let currentSearchQuery = '';
+
+        function normalizeQuery(str) {
+            if (!str) return '';
+            return str.toString().toLowerCase().replace(/[\s\-\+\(\)]/g, '');
+        }
+
         // Load applications on start
         document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('trackerSearchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        performTrackerSearch();
+                    }
+                });
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             const queryId = urlParams.get('id');
             if (queryId) {
-                document.getElementById('trackerSearchInput').value = queryId;
+                if (searchInput) searchInput.value = queryId;
                 performTrackerSearch();
             } else {
-                renderApplications(SarthXGovBridge.getApplications());
+                renderFilteredApplications();
             }
         });
 
+        function handleTrackerSubmit(e) {
+            if (e) e.preventDefault();
+            performTrackerSearch();
+            return false;
+        }
+
+        function quickSampleSearch(val) {
+            const input = document.getElementById('trackerSearchInput');
+            if (input) {
+                input.value = val;
+                performTrackerSearch();
+            }
+        }
+
+        function filterByStage(stage, btnEl) {
+            currentStageFilter = stage;
+            document.querySelectorAll('.tracker-tab-pill').forEach(btn => btn.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            renderFilteredApplications();
+        }
+
         function performTrackerSearch() {
-            const q = document.getElementById('trackerSearchInput').value.trim().toLowerCase();
+            const input = document.getElementById('trackerSearchInput');
+            currentSearchQuery = input ? input.value.trim() : '';
+            renderFilteredApplications();
+        }
+
+        function resetTrackerSearch() {
+            const input = document.getElementById('trackerSearchInput');
+            if (input) input.value = '';
+            currentSearchQuery = '';
+            currentStageFilter = 'all';
+            document.querySelectorAll('.tracker-tab-pill').forEach((btn, idx) => {
+                if (idx === 0) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            renderFilteredApplications();
+        }
+
+        function restoreDemoApplications() {
+            try {
+                localStorage.removeItem('sarthx_applications');
+            } catch (e) {}
+            resetTrackerSearch();
+        }
+
+        function renderFilteredApplications() {
             const allApps = SarthXGovBridge.getApplications();
-            if (!q) {
-                renderApplications(allApps);
-                return;
+            
+            // Update Tab Counts
+            const cAll = allApps.length;
+            const cScrutiny = allApps.filter(a => (a.currentStage || 2) <= 2).length;
+            const cApproved = allApps.filter(a => (a.currentStage || 2) === 3).length;
+            const cDisbursed = allApps.filter(a => (a.currentStage || 2) >= 4).length;
+
+            const elAll = document.getElementById('countAll');
+            const elScrutiny = document.getElementById('countScrutiny');
+            const elApproved = document.getElementById('countApproved');
+            const elDisbursed = document.getElementById('countDisbursed');
+
+            if (elAll) elAll.textContent = cAll;
+            if (elScrutiny) elScrutiny.textContent = cScrutiny;
+            if (elApproved) elApproved.textContent = cApproved;
+            if (elDisbursed) elDisbursed.textContent = cDisbursed;
+
+            let filtered = allApps;
+
+            // Apply Search Query
+            if (currentSearchQuery) {
+                const cleanQ = normalizeQuery(currentSearchQuery);
+                const rawLow = currentSearchQuery.toLowerCase();
+                filtered = filtered.filter(a => {
+                    const normRef = normalizeQuery(a.refId);
+                    const normPhone = normalizeQuery(a.phone);
+                    const title = (a.schemeTitle || '').toLowerCase();
+                    const applicant = (a.applicantName || '').toLowerCase();
+                    return normRef.includes(cleanQ) ||
+                           normPhone.includes(cleanQ) ||
+                           cleanQ.includes(normPhone) ||
+                           title.includes(rawLow) ||
+                           applicant.includes(rawLow);
+                });
             }
 
-            const filtered = allApps.filter(a => 
-                a.refId.toLowerCase().includes(q) ||
-                (a.phone && a.phone.includes(q)) ||
-                a.schemeTitle.toLowerCase().includes(q) ||
-                a.applicantName.toLowerCase().includes(q)
-            );
+            // Apply Stage Filter
+            if (currentStageFilter === 'scrutiny') {
+                filtered = filtered.filter(a => (a.currentStage || 2) <= 2);
+            } else if (currentStageFilter === 'approved') {
+                filtered = filtered.filter(a => (a.currentStage || 2) === 3);
+            } else if (currentStageFilter === 'disbursed') {
+                filtered = filtered.filter(a => (a.currentStage || 2) >= 4);
+            }
 
             renderApplications(filtered);
         }
 
-        function resetTrackerSearch() {
-            document.getElementById('trackerSearchInput').value = '';
-            renderApplications(SarthXGovBridge.getApplications());
-        }
-
         function renderApplications(apps) {
             const container = document.getElementById('applicationsContainer');
+            if (!container) return;
             container.innerHTML = '';
 
             if (apps.length === 0) {
@@ -343,12 +465,17 @@
                     <div style="text-align: center; padding: 60px 20px; background: var(--bg-card); border-radius: var(--radius-lg); border: 1px solid var(--border-color); max-width: 760px; margin: 0 auto;">
                         <i class="fa-solid fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 16px;"></i>
                         <h3 style="font-size: 1.3rem; color: var(--text-main); margin-bottom: 8px;">No Applications Found</h3>
-                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px;">
-                            No matching records found. Apply to a scheme or check your reference number.
+                        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px;">
+                            No matching records found for current filters or query.
                         </p>
-                        <a href="login.html" class="btn-auto-fill-gov" style="display: inline-flex; padding: 12px 24px; border-radius: var(--radius-pill); text-decoration: none;">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Match & Apply Schemes
-                        </a>
+                        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                            <button type="button" class="btn-auto-fill-gov" onclick="resetTrackerSearch()" style="padding: 10px 20px; border-radius: var(--radius-pill);">
+                                <i class="fa-solid fa-rotate-left"></i> Clear Filters &amp; Show All
+                            </button>
+                            <button type="button" class="check-details-btn" onclick="restoreDemoApplications()" style="padding: 10px 20px; border-radius: var(--radius-pill);">
+                                <i class="fa-solid fa-database"></i> Restore Demo Applications
+                            </button>
+                        </div>
                     </div>
                 `;
                 return;
@@ -411,7 +538,7 @@
                             <div class="pipeline-step-node">
                                 <i class="fa-solid fa-money-bill-transfer"></i>
                             </div>
-                            <span class="pipeline-step-label">4. Sanction & DBT</span>
+                            <span class="pipeline-step-label">4. Sanction &amp; DBT</span>
                             <span class="pipeline-step-time">${app.disbursementDate || 'Pending'}</span>
                         </div>
                     </div>
@@ -440,7 +567,7 @@
                                 Submitted Document Dossier (${(app.submittedDocuments || []).length || 2} Verified Documents)
                             </h4>
                             <span style="font-size: 0.72rem; color: #059669; font-weight: 700;">
-                                <i class="fa-solid fa-circle-check"></i> Pre-Verified via DigiLocker & State Portals
+                                <i class="fa-solid fa-circle-check"></i> Pre-Verified via DigiLocker &amp; State Portals
                             </span>
                         </div>
                         <div class="tracker-docs-grid">
@@ -455,7 +582,7 @@
                                             ${d.name}
                                         </span>
                                         <span class="tracker-doc-chip-badge" style="color: ${d.badgeColor || '#059669'};">
-                                            <i class="fa-solid fa-badge-check"></i> ${d.status || 'Verified'}
+                                            <i class="fa-solid fa-circle-check"></i> ${d.status || 'Verified'}
                                         </span>
                                     </div>
                                     <div class="tracker-doc-chip-id">${d.docNumber}</div>

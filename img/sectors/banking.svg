@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bankBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#451a03"/>
+      <stop offset="50%" stop-color="#78350f"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="coinGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#eab308"/>
+      <stop offset="100%" stop-color="#ca8a04"/>
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="220" fill="url(#bankBg)"/>
+  
+  <!-- Financial Upward Grid lines -->
+  <path d="M40 180 L 130 140 L 220 160 L 320 90 L 370 110" fill="none" stroke="#fde68a" stroke-width="2.5" stroke-dasharray="6 4" stroke-opacity="0.4"/>
+  <circle cx="320" cy="90" r="6" fill="#facc15"/>
+  <circle cx="370" cy="110" r="5" fill="#facc15"/>
+
+  <!-- Neoclassical Bank Facade (Left) -->
+  <g transform="translate(60, 60)">
+    <!-- Pediment (Roof Triangle) -->
+    <polygon points="50,10 100,35 0,35" fill="#ffffff" fill-opacity="0.95"/>
+    <rect x="0" y="35" width="100" height="8" fill="#e2e8f0"/>
+    <!-- 4 Pillars -->
+    <rect x="8" y="43" width="12" height="60" rx="2" fill="#ffffff" fill-opacity="0.9"/>
+    <rect x="32" y="43" width="12" height="60" rx="2" fill="#ffffff" fill-opacity="0.9"/>
+    <rect x="56" y="43" width="12" height="60" rx="2" fill="#ffffff" fill-opacity="0.9"/>
+    <rect x="80" y="43" width="12" height="60" rx="2" fill="#ffffff" fill-opacity="0.9"/>
+    <!-- Base -->
+    <rect x="-6" y="103" width="112" height="12" rx="3" fill="#e2e8f0"/>
+  </g>
+
+  <!-- Big Indian Rupee Coin (Center-Right) -->
+  <g transform="translate(230, 65)">
+    <!-- Outer Glow -->
+    <circle cx="55" cy="55" r="50" fill="none" stroke="#facc15" stroke-width="2" stroke-opacity="0.4"/>
+    <circle cx="55" cy="55" r="44" fill="url(#coinGold)" stroke="#fef08a" stroke-width="3"/>
+    <circle cx="55" cy="55" r="36" fill="none" stroke="#a16207" stroke-width="1.5" stroke-dasharray="3 3"/>
+    <!-- Rupee Symbol ₹ -->
+    <text x="55" y="70" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="44" font-weight="900" fill="#713f12" text-anchor="middle">₹</text>
+  </g>
+
+  <!-- Digital Payment Security Shield (Far Right) -->
+  <g transform="translate(325, 45)">
+    <path d="M25 5 Q 45 10 45 25 Q 45 55 25 70 Q 5 55 5 25 Q 5 10 25 5 Z" fill="url(#shieldGrad)" stroke="#6ee7b7" stroke-width="2"/>
+    <path d="M18 36 L 23 42 L 34 28" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Modern Overlay Badge -->
+  <rect x="20" y="20" width="150" height="28" rx="14" fill="#451a03" fill-opacity="0.85" stroke="#f59e0b" stroke-width="1.2"/>
+  <text x="32" y="38" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#fde68a" letter-spacing="0.5">🏛️ BANKING &amp; DBT</text>
+</svg>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" width="100%" height="100%">
+  <defs>
+    <linearGradient id="healthBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4c0519"/>
+      <stop offset="50%" stop-color="#881337"/>
+      <stop offset="100%" stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="crossGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#fecdd3"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="220" fill="url(#healthBg)"/>
+  
+  <!-- Subtle Heart/Rings in background -->
+  <circle cx="200" cy="110" r="90" fill="none" stroke="#fb7185" stroke-width="1.5" stroke-opacity="0.2" stroke-dasharray="6 6"/>
+  <circle cx="200" cy="110" r="130" fill="none" stroke="#fda4af" stroke-width="1" stroke-opacity="0.15"/>
+
+  <!-- Vital ECG Heartbeat Wave across background -->
+  <path d="M10 130 L 90 130 L 115 90 L 130 165 L 155 70 L 175 145 L 195 120 L 210 130 L 390 130" fill="none" stroke="#fecdd3" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.6"/>
+
+  <!-- Medical Cross / Shield (Center) -->
+  <g transform="translate(140, 45)">
+    <!-- Protective Shield Glow -->
+    <path d="M60 10 Q 110 20 110 60 Q 110 110 60 135 Q 10 110 10 60 Q 10 20 60 10 Z" fill="#ffffff" fill-opacity="0.15" stroke="#f43f5e" stroke-width="2"/>
+    <!-- Red Cross Inside -->
+    <g transform="translate(35, 40)">
+      <rect x="18" y="0" width="16" height="52" rx="4" fill="#ffffff"/>
+      <rect x="0" y="18" width="52" height="16" rx="4" fill="#ffffff"/>
+    </g>
+  </g>
+
+  <!-- Stethoscope (Left) -->
+  <g transform="translate(45, 65)">
+    <path d="M30 20 C 15 20 10 40 10 65 C 10 95 35 110 55 105 C 75 100 80 80 80 65" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="30" cy="20" r="5" fill="#f43f5e" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="80" cy="65" r="9" fill="#0f172a" stroke="#ffffff" stroke-width="3"/>
+  </g>
+
+  <!-- Medicine Capsule (Right) -->
+  <g transform="translate(290, 75) rotate(35)">
+    <rect x="0" y="0" width="22" height="55" rx="11" fill="#ffffff"/>
+    <path d="M0 28 L 22 28 L 22 44 C 22 50 17 55 11 55 C 5 55 0 50 0 44 Z" fill="#059669"/>
+    <rect x="2" y="26" width="18" height="4" fill="#047857"/>
+  </g>
+
+  <!-- Modern Overlay Badge -->
+  <rect x="20" y="20" width="150" height="28" rx="14" fill="#4c0519" fill-opacity="0.85" stroke="#fb7185" stroke-width="1.2"/>
+  <text x="32" y="38" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#fecdd3" letter-spacing="0.5">❤️ AYUSHMAN &amp; HEALTH</text>
+</svg>

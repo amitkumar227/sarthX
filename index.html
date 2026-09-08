@@ -428,18 +428,61 @@
             const categoriesGrid = document.getElementById('categoriesGrid');
             if (categoriesGrid && window.SCHEMES_METADATA) {
                 const categories = window.SCHEMES_METADATA.categories.filter(c => c.id !== 'all');
+                const sectorImages = {
+                    agriculture: 'img/sectors/agriculture.svg',
+                    students: 'img/sectors/education.svg',
+                    financial: 'img/sectors/banking.svg',
+                    health: 'img/sectors/healthcare.svg',
+                    housing: 'img/sectors/housing.svg',
+                    women: 'img/sectors/women.svg',
+                    skills: 'img/sectors/skills.svg',
+                    social: 'img/sectors/social.svg',
+                    business: 'img/sectors/business.svg'
+                };
+
+                const sectorTaglines = {
+                    agriculture: 'PM Kisan, Fasal Bima & Subsidized Agri Loans',
+                    students: 'National Scholarships, Fee Waivers & Fellowships',
+                    financial: 'Jan Dhan, Micro-Credit, DBT & Subsidized Loans',
+                    health: 'Ayushman Bharat & Free Medical Hospitalization',
+                    housing: 'PMAY Urban/Gramin Pucca House Subsidies',
+                    women: 'Lakhpati Didi, Maternity & Sukanya Samriddhi',
+                    skills: 'PMKVY 4.0, Apprenticeship & Vocational Training',
+                    social: 'Divyangjan, Senior Citizen Pension & Support',
+                    business: 'PM Mudra, Stand-Up India & MSME Guarantees'
+                };
+
                 categoriesGrid.innerHTML = categories.map(cat => {
                     const catName = window.t ? window.t('cat_' + cat.id) : cat.name;
                     const progText = window.t ? window.t('Programs Available') : 'Programs Available';
+                    const sectorImg = sectorImages[cat.id] || 'img/sectors/agriculture.svg';
+                    const tagline = sectorTaglines[cat.id] || 'Government Welfare Programs';
                     return `
-                        <a href="schemes.html?category=${cat.id}" class="category-card">
-                            <div class="category-icon-box">
-                                <i class="fa-solid ${cat.icon}"></i>
+                        <a href="schemes.html?category=${cat.id}" class="category-card sector-card-enhanced">
+                            <div class="category-visual-banner" style="background: ${cat.gradient || 'var(--bg-card)'};">
+                                <img src="${sectorImg}" alt="${catName}" class="category-sector-img" loading="lazy">
+                                <div class="category-banner-overlay">
+                                    <span class="category-count-badge">
+                                        <i class="fa-solid fa-layer-group"></i> ${cat.count} Schemes
+                                    </span>
+                                </div>
                             </div>
-                            <h4>${catName}</h4>
-                            <div class="category-count">
-                                <span>${cat.count} ${progText}</span>
-                                <i class="fa-solid fa-arrow-right" style="font-size: 0.8rem; color: var(--primary);"></i>
+                            <div class="category-card-body">
+                                <div class="category-title-row">
+                                    <div class="category-icon-box" style="background: ${cat.gradient}; color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.18);">
+                                        <i class="fa-solid ${cat.icon}"></i>
+                                    </div>
+                                    <div>
+                                        <h4>${catName}</h4>
+                                        <p class="category-tagline">${tagline}</p>
+                                    </div>
+                                </div>
+                                <div class="category-card-footer">
+                                    <span class="category-footer-count">${cat.count} ${progText}</span>
+                                    <span class="category-explore-link">
+                                        Explore <i class="fa-solid fa-arrow-right"></i>
+                                    </span>
+                                </div>
                             </div>
                         </a>
                     `;
@@ -577,61 +620,63 @@
             const asstStatus = document.getElementById('sahayakStatus');
 
             if (heroMicBtn && window.bhashini) {
-                heroMicBtn.addEventListener('click', () => {
+                heroMicBtn.onclick = () => {
                     const heroLang = document.getElementById('languageSelect') ? document.getElementById('languageSelect').value : 'en';
                     const langCode = window.bhashini.getSpeechLangCode(heroLang);
                     window.bhashini.startVoiceRecognition({
                         lang: langCode,
+                        fallbackPromptTarget: 'hero',
                         onStart: () => {
                             heroMicBtn.classList.add('listening');
-                            heroStatus.innerHTML = '<i class="fa-solid fa-circle-dot fa-beat"></i> Listening... Speak now in your language';
+                            if (heroStatus) heroStatus.innerHTML = '<i class="fa-solid fa-circle-dot fa-beat"></i> Listening... Speak now in your language';
                         },
                         onResult: (res) => {
-                            heroInput.value = res.finalText || res.interimText;
+                            if (heroInput) heroInput.value = res.finalText || res.interimText;
                             if (res.isFinal) {
-                                heroStatus.innerHTML = `Recognized: "${res.finalText}"`;
+                                if (heroStatus) heroStatus.innerHTML = `Recognized: "${res.finalText}"`;
                                 setTimeout(() => {
                                     handleHeroSearch(new Event('submit'));
-                                }, 1200);
+                                }, 1000);
                             }
                         },
                         onError: (err) => {
                             heroMicBtn.classList.remove('listening');
-                            heroStatus.innerText = 'Voice Error: ' + err;
+                            if (heroStatus) heroStatus.innerText = 'Voice Assistant active: select or speak query';
                         },
                         onEnd: () => {
                             heroMicBtn.classList.remove('listening');
                         }
                     });
-                });
+                };
             }
 
             if (asstMicBtn && window.bhashini) {
-                asstMicBtn.addEventListener('click', () => {
+                asstMicBtn.onclick = () => {
                     const bhashiniLang = document.getElementById('bhashiniLangSelect') ? document.getElementById('bhashiniLangSelect').value : 'hi';
                     const langCode = window.bhashini.getSpeechLangCode(bhashiniLang);
                     window.bhashini.startVoiceRecognition({
                         lang: langCode,
+                        fallbackPromptTarget: 'sahayak',
                         onStart: () => {
                             asstMicBtn.classList.add('listening');
-                            asstStatus.innerHTML = '<i class="fa-solid fa-circle-dot fa-beat"></i> Listening in your language...';
+                            if (asstStatus) asstStatus.innerHTML = '<i class="fa-solid fa-circle-dot fa-beat"></i> Listening in your language...';
                         },
                         onResult: (res) => {
-                            asstInput.value = res.finalText || res.interimText;
+                            if (asstInput) asstInput.value = res.finalText || res.interimText;
                             if (res.isFinal) {
-                                asstStatus.innerHTML = `Understood: "${res.finalText}"`;
+                                if (asstStatus) asstStatus.innerHTML = `Understood: "${res.finalText}"`;
                                 executeSahayakQuery();
                             }
                         },
                         onError: (err) => {
                             asstMicBtn.classList.remove('listening');
-                            asstStatus.innerText = 'Voice Error: ' + err;
+                            if (asstStatus) asstStatus.innerText = 'Voice Assistant active: select or speak query';
                         },
                         onEnd: () => {
                             asstMicBtn.classList.remove('listening');
                         }
                     });
-                });
+                };
             }
         }
 

@@ -561,7 +561,8 @@
             if (icon) icon.className = 'fa-solid fa-sun';
         }
         window.addEventListener('languageChanged', () => {
-            if (document.getElementById('resultsSection') && document.getElementById('resultsSection').style.display === 'block') {
+            const stepRes = document.getElementById('stepResults');
+            if (stepRes && stepRes.classList.contains('active')) {
                 computeMatches();
             }
         });
@@ -650,19 +651,48 @@
             const potentialSchemes = [];
 
             window.SCHEMES_DATABASE.forEach(scheme => {
-                const crit = scheme.eligibilityCriteria;
+                const crit = scheme.eligibilityCriteria || {};
                 let score = 0;
                 let totalFactors = 5;
 
-                if (userProfile.age >= crit.minAge && userProfile.age <= crit.maxAge) score += 1;
-                if (crit.gender === 'all' || crit.gender === userProfile.gender) score += 1;
-                if (crit.occupations.includes('all') || crit.occupations.includes(userProfile.occupation)) score += 1;
-                if (crit.caste.includes('all') || crit.caste.includes(userProfile.caste)) score += 1;
-                if (crit.maxIncome === null || userProfile.incomeNum <= crit.maxIncome) score += 1;
+                const minAge = crit.minAge ?? 0;
+                const maxAge = crit.maxAge ?? 100;
+                if (userProfile.age >= minAge && userProfile.age <= maxAge) score += 1;
+
+                const gender = (crit.gender || 'all').toLowerCase();
+                if (gender === 'all' || gender === userProfile.gender.toLowerCase()) score += 1;
+
+                const occupations = Array.isArray(crit.occupations) ? crit.occupations : ['all'];
+                const userOcc = (userProfile.occupation || '').toLowerCase();
+                const isOccMatch = occupations.includes('all') || occupations.some(o => {
+                    const ol = o.toLowerCase();
+                    if (userOcc === 'self-employed' && (ol.includes('business') || ol.includes('artisan') || ol.includes('msme') || ol.includes('vendor') || ol.includes('self-employed') || ol.includes('entrepreneur'))) return true;
+                    if (userOcc === 'worker' && (ol.includes('worker') || ol.includes('labor') || ol.includes('labour') || ol.includes('artisan') || ol.includes('wage'))) return true;
+                    if (userOcc === 'student' && (ol.includes('student') || ol.includes('scholar') || ol.includes('education'))) return true;
+                    if (userOcc === 'farmer' && (ol.includes('farmer') || ol.includes('kisan') || ol.includes('agriculture'))) return true;
+                    if (userOcc === 'unemployed' && (ol.includes('unemployed') || ol.includes('youth') || ol.includes('job'))) return true;
+                    return ol === userOcc || ol.includes(userOcc) || userOcc.includes(ol);
+                });
+                if (isOccMatch) score += 1;
+
+                const caste = Array.isArray(crit.caste) ? crit.caste : ['all'];
+                const userCaste = (userProfile.caste || '').toLowerCase();
+                const isCasteMatch = caste.includes('all') || caste.some(c => c.toLowerCase() === userCaste || c.toLowerCase() === 'all');
+                if (isCasteMatch) score += 1;
+
+                const maxIncome = crit.maxIncome;
+                if (maxIncome === null || maxIncome === undefined || userProfile.incomeNum <= maxIncome) score += 1;
 
                 if (crit.disabilityRequired && !userProfile.hasDisability) score -= 2;
                 if (crit.landRequired && !userProfile.landHolding) score -= 2;
                 if (scheme.id === 'sukanya-samriddhi' && !userProfile.hasGirlChild && userProfile.gender !== 'female') score -= 2;
+
+                // State jurisdiction check
+                const schemeState = (scheme.state || 'All India').toLowerCase();
+                const userState = (userProfile.state || 'All India').toLowerCase();
+                if (scheme.level === 'State' && userState !== 'all india' && !schemeState.includes(userState) && !userState.includes(schemeState)) {
+                    score -= 2; // Penalize mismatching state schemes
+                }
 
                 if (score >= totalFactors) {
                     eligibleSchemes.push(scheme);

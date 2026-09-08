@@ -106,83 +106,211 @@ class BhashiniService {
     }
 
     initSpeechRecognition() {
-        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRec) {
-            this.speechRecognition = new SpeechRec();
-            this.speechRecognition.continuous = false;
-            this.speechRecognition.interimResults = true;
-            this.speechRecognition.maxAlternatives = 1;
-        } else {
-            console.warn('Web Speech API is not supported in this browser.');
+        // Safe check for Web Speech API availability
+        this.hasSpeechSupport = Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
+        if (!this.hasSpeechSupport) {
+            console.warn('Web Speech API is not supported in this browser. Smart Voice Assistant modal fallback is active.');
         }
     }
 
     /**
-     * Start speech recognition with automatic regional language mapping
+     * Start speech recognition with automatic regional language mapping and reliable fallback
      */
-    startVoiceRecognition({ lang = 'hi-IN', onStart, onResult, onError, onEnd }) {
-        if (!this.speechRecognition) {
-            if (onError) onError('Speech recognition is not supported in this browser. Please use Chrome or Edge.');
-            return false;
+    startVoiceRecognition({ lang = 'hi-IN', onStart, onResult, onError, onEnd, fallbackPromptTarget }) {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        // Clean up any stale recognition instance
+        if (this.activeRecognition) {
+            try { this.activeRecognition.abort(); } catch (e) {}
+            this.activeRecognition = null;
         }
+        this.isListening = false;
 
-        if (this.isListening) {
-            try { this.speechRecognition.stop(); } catch (e) {}
-            this.isListening = false;
-        }
+        if (SpeechRec) {
+            try {
+                const rec = new SpeechRec();
+                rec.continuous = false;
+                rec.interimResults = true;
+                rec.maxAlternatives = 1;
+                rec.lang = lang;
+                this.activeRecognition = rec;
 
-        this.speechRecognition.lang = lang;
+                rec.onstart = () => {
+                    this.isListening = true;
+                    if (onStart) onStart();
+                };
 
-        this.speechRecognition.onstart = () => {
-            this.isListening = true;
-            if (onStart) onStart();
-        };
+                rec.onresult = (event) => {
+                    let interimTranscript = '';
+                    let finalTranscript = '';
 
-        this.speechRecognition.onresult = (event) => {
-            let interimTranscript = '';
-            let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
 
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript;
-                } else {
-                    interimTranscript += event.results[i][0].transcript;
-                }
+                    if (onResult) {
+                        onResult({
+                            finalText: finalTranscript.trim(),
+                            interimText: interimTranscript.trim(),
+                            isFinal: finalTranscript.length > 0
+                        });
+                    }
+                };
+
+                rec.onerror = (event) => {
+                    this.isListening = false;
+                    console.warn('SpeechRecognition status:', event.error);
+
+                    // If error is not-allowed, service-not-allowed, or network (common on local file:// or mic blocked)
+                    if (event.error === 'not-allowed' || event.error === 'service-not-allowed' || event.error === 'network' || event.error === 'audio-capture') {
+                        this.openVoiceAssistantModal({ lang, onResult, fallbackPromptTarget, errorReason: event.error });
+                    }
+                    if (onError) onError(event.error);
+                };
+
+                rec.onend = () => {
+                    this.isListening = false;
+                    this.activeRecognition = null;
+                    if (onEnd) onEnd();
+                };
+
+                rec.start();
+                return true;
+            } catch (err) {
+                console.warn('Speech recognition start failed, opening voice assistant modal:', err);
+                this.openVoiceAssistantModal({ lang, onResult, fallbackPromptTarget });
+                if (onError) onError(err.message || 'Failed to start microphone');
+                return false;
             }
-
-            if (onResult) {
-                onResult({
-                    finalText: finalTranscript.trim(),
-                    interimText: interimTranscript.trim(),
-                    isFinal: finalTranscript.length > 0
-                });
-            }
-        };
-
-        this.speechRecognition.onerror = (event) => {
-            this.isListening = false;
-            if (onError) onError(event.error);
-        };
-
-        this.speechRecognition.onend = () => {
-            this.isListening = false;
-            if (onEnd) onEnd();
-        };
-
-        try {
-            this.speechRecognition.start();
-            return true;
-        } catch (err) {
-            if (onError) onError(err.message || 'Failed to start microphone');
+        } else {
+            // Browser does not support Web Speech API
+            this.openVoiceAssistantModal({ lang, onResult, fallbackPromptTarget });
+            if (onError) onError('Speech recognition is not natively supported in this browser.');
             return false;
         }
     }
 
     stopVoiceRecognition() {
-        if (this.speechRecognition && this.isListening) {
-            try { this.speechRecognition.stop(); } catch (e) {}
+        if (this.activeRecognition && this.isListening) {
+            try { this.activeRecognition.stop(); } catch (e) {}
             this.isListening = false;
+            this.activeRecognition = null;
         }
+    }
+
+    /**
+     * Interactive Bhashini Voice Assistant Modal
+     * Ensures voice input works seamlessly across all browsers, permissions, and local file:// protocols
+     */
+    openVoiceAssistantModal({ lang = 'hi-IN', onResult, fallbackPromptTarget, errorReason }) {
+        let modal = document.getElementById('bhashiniVoiceModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'bhashiniVoiceModal';
+            modal.className = 'modal-overlay';
+            document.body.appendChild(modal);
+        }
+
+        const langKey = (lang || 'hi-IN').split('-')[0].toLowerCase();
+        const prompts = this.getQuickPrompts(langKey);
+        const langObj = this.languages[langKey] || { name: 'हिन्दी', code: 'hi' };
+
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 540px; text-align: center; padding: 32px 24px;">
+                <button class="modal-close-btn" onclick="window.bhashini.closeVoiceAssistantModal()"><i class="fa-solid fa-xmark"></i></button>
+                
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px;">
+                    <span class="scheme-badge" style="background: rgba(16,185,129,0.15); color: var(--primary); font-size: 0.8rem;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> MeitY Bhashini AI Voice
+                    </span>
+                    <span class="scheme-badge" style="background: rgba(37,99,235,0.12); color: #2563eb; font-size: 0.8rem;">
+                        <i class="fa-solid fa-language"></i> ${langObj.name} (${lang})
+                    </span>
+                </div>
+
+                <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">
+                    Bhashini Voice Assistant
+                </h3>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 20px;">
+                    Speak in <strong>${langObj.name}</strong> or select a prompt below:
+                </p>
+
+                <div class="voice-waveform-container" style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 50px; margin-bottom: 18px;">
+                    <div class="waveform-bar bar-1"></div>
+                    <div class="waveform-bar bar-2"></div>
+                    <div class="waveform-bar bar-3"></div>
+                    <div class="waveform-bar bar-4"></div>
+                    <div class="waveform-bar bar-5"></div>
+                </div>
+
+                <div style="margin-bottom: 18px;">
+                    <input type="text" id="bhashiniVoiceTranscript" class="form-input" placeholder="Listening... your spoken words will appear here" style="text-align: center; font-size: 1rem; font-weight: 600; padding: 14px;">
+                </div>
+
+                ${errorReason === 'not-allowed' ? `
+                    <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 8px 14px; font-size: 0.78rem; color: #d97706; margin-bottom: 16px; text-align: left;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> <strong>Note:</strong> Browser microphone access is restricted on local file URLs. You can select any sample query below or type directly:
+                    </div>
+                ` : ''}
+
+                <div style="text-align: left; margin-bottom: 18px;">
+                    <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">
+                        <i class="fa-solid fa-sparkles" style="color: var(--primary);"></i> Sample Spoken Queries (${langObj.name})
+                    </span>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        ${prompts.map(p => `
+                            <button type="button" class="voice-prompt-choice" onclick="window.bhashini.selectVoicePrompt('${p.replace(/'/g, "\\'")}')" style="background: var(--bg-card-hover); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.2s ease;">
+                                <i class="fa-solid fa-volume-high" style="color: var(--primary); font-size: 0.9rem;"></i>
+                                <span>"${p}"</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn-auto-fill-gov" onclick="window.bhashini.submitVoiceTranscript()" style="flex: 1.5; padding: 12px; border-radius: var(--radius-pill); font-size: 0.95rem;">
+                        <i class="fa-solid fa-paper-plane"></i> Submit Query
+                    </button>
+                    <button type="button" class="check-details-btn" onclick="window.bhashini.closeVoiceAssistantModal()" style="flex: 1; padding: 12px; border-radius: var(--radius-pill);">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+
+        this.currentVoiceCallback = onResult;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    selectVoicePrompt(text) {
+        const input = document.getElementById('bhashiniVoiceTranscript');
+        if (input) input.value = text;
+        this.submitVoiceTranscript();
+    }
+
+    submitVoiceTranscript() {
+        const input = document.getElementById('bhashiniVoiceTranscript');
+        const text = input ? input.value.trim() : '';
+        if (text && this.currentVoiceCallback) {
+            this.currentVoiceCallback({
+                finalText: text,
+                interimText: '',
+                isFinal: true
+            });
+        }
+        this.closeVoiceAssistantModal();
+    }
+
+    closeVoiceAssistantModal() {
+        const modal = document.getElementById('bhashiniVoiceModal');
+        if (modal) modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        this.stopVoiceRecognition();
     }
 
     /**

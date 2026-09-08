@@ -645,8 +645,8 @@ body.dark-theme .bhashini-assistant-card {
 
 .categories-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
 }
 
 .category-card {
@@ -701,6 +701,139 @@ body.dark-theme .bhashini-assistant-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+/* =========================================================
+   ENHANCED SECTOR CARDS (WITH SECTOR ILLUSTRATION IMAGES)
+   ========================================================= */
+.category-card.sector-card-enhanced {
+    padding: 0;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.category-card.sector-card-enhanced:hover {
+    transform: translateY(-6px);
+    border-color: rgba(5, 150, 105, 0.45);
+    box-shadow: 0 16px 36px rgba(5, 150, 105, 0.14);
+}
+
+.category-visual-banner {
+    position: relative;
+    width: 100%;
+    height: 155px;
+    overflow: hidden;
+    background: #0f172a;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.category-sector-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.category-card.sector-card-enhanced:hover .category-sector-img {
+    transform: scale(1.07);
+}
+
+.category-banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.45) 100%);
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 14px 16px;
+    pointer-events: none;
+}
+
+.category-count-badge {
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.category-card-body {
+    padding: 18px 20px 20px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.category-title-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.category-title-row .category-icon-box {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    font-size: 1.2rem;
+}
+
+.category-title-row h4 {
+    font-size: 1.12rem;
+    font-weight: 800;
+    line-height: 1.3;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.category-tagline {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+.category-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-color);
+}
+
+.category-footer-count {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.category-explore-link {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.2s ease;
+}
+
+.category-card.sector-card-enhanced:hover .category-explore-link {
+    transform: translateX(4px);
 }
 
 /* =========================================================
@@ -2673,5 +2806,116 @@ body.dark-theme .calc-results-card {
     border-color: var(--primary);
     box-shadow: 0 3px 12px rgba(5, 150, 105, 0.3);
 }
+
+/* =========================================================
+   BHASHINI LIVE VOICE ASSISTANT WAVEFORM & MODAL STYLES
+   ========================================================= */
+.voice-waveform-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 50px;
+    margin-bottom: 18px;
+}
+
+.waveform-bar {
+    width: 6px;
+    height: 12px;
+    background: var(--primary);
+    border-radius: 4px;
+    animation: soundWave 1.2s ease-in-out infinite alternate;
+}
+
+.waveform-bar.bar-1 { animation-delay: 0.1s; height: 16px; }
+.waveform-bar.bar-2 { animation-delay: 0.3s; height: 32px; background: #34d399; }
+.waveform-bar.bar-3 { animation-delay: 0.5s; height: 44px; background: #2563eb; }
+.waveform-bar.bar-4 { animation-delay: 0.2s; height: 28px; background: #34d399; }
+.waveform-bar.bar-5 { animation-delay: 0.4s; height: 18px; }
+
+@keyframes soundWave {
+    0% {
+        transform: scaleY(0.4);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scaleY(1.3);
+        opacity: 1;
+    }
+}
+
+.voice-prompt-choice:hover {
+    background: rgba(5, 150, 105, 0.08) !important;
+    border-color: var(--primary) !important;
+    transform: translateX(4px);
+}
+
+/* =========================================================
+   TRACKER QUICK SAMPLE PILLS & STATUS FILTER TABS
+   ========================================================= */
+.tracker-sample-pills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+.tracker-sample-btn {
+    background: var(--bg-card);
+    border: 1px dashed var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.tracker-sample-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(5, 150, 105, 0.06);
+    transform: translateY(-1px);
+}
+
+.tracker-filter-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 24px 0 16px 0;
+}
+
+.tracker-tab-pill {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 8px 18px;
+    border-radius: var(--radius-pill);
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tracker-tab-pill:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.tracker-tab-pill.active {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+}
+
 
 

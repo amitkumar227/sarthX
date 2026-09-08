@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" width="100%" height="100%">
+  <defs>
+    <linearGradient id="womenBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#500724"/>
+      <stop offset="50%" stop-color="#831843"/>
+      <stop offset="100%" stop-color="#db2777"/>
+    </linearGradient>
+    <linearGradient id="roseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f472b6"/>
+      <stop offset="100%" stop-color="#fbcfe8"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="220" fill="url(#womenBg)"/>
+  
+  <!-- Radiating Empowerment Sunburst -->
+  <circle cx="200" cy="110" r="85" fill="none" stroke="#f472b6" stroke-width="1.5" stroke-opacity="0.25" stroke-dasharray="6 6"/>
+  <circle cx="200" cy="110" r="125" fill="none" stroke="#fbcfe8" stroke-width="1" stroke-opacity="0.18"/>
+
+  <!-- Protective Heart & Empowerment Motif -->
+  <g transform="translate(140, 40)">
+    <!-- Stylized Lotus / Blooming Petals -->
+    <path d="M60 140 C 20 120 10 70 60 30 C 110 70 100 120 60 140 Z" fill="#ffffff" fill-opacity="0.15"/>
+  </g>
+
+  <!-- Mother & Child Silhouette (Center) -->
+  <g transform="translate(160, 50)">
+    <!-- Mother Head & Hair -->
+    <circle cx="40" cy="25" r="18" fill="#ffffff"/>
+    <path d="M26 22 C 26 10 50 10 54 22 C 54 36 26 40 26 22 Z" fill="#9d174d"/>
+    <!-- Mother Body / Saree Drapery -->
+    <path d="M24 45 C 24 45 40 40 55 45 C 65 52 75 75 75 110 L 10 110 C 10 80 18 55 24 45 Z" fill="#ffffff" fill-opacity="0.95"/>
+    
+    <!-- Child Head -->
+    <circle cx="58" cy="62" r="12" fill="#fde047"/>
+    <!-- Child Body hugged in arms -->
+    <path d="M50 74 C 50 74 65 72 70 76 C 75 82 78 95 78 110 L 45 110 C 45 92 48 80 50 74 Z" fill="#fbcfe8"/>
+  </g>
+
+  <!-- Self Help Group & Education Elements (Left) -->
+  <g transform="translate(45, 80)">
+    <circle cx="30" cy="30" r="24" fill="#ffffff" fill-opacity="0.2" stroke="#f472b6" stroke-width="2"/>
+    <path d="M30 18 L 33 26 L 41 26 L 35 31 L 37 39 L 30 34 L 23 39 L 25 31 L 19 26 L 27 26 Z" fill="#fde047"/>
+  </g>
+
+  <!-- Girl Child Nutrition / Sukanya Samriddhi (Right) -->
+  <g transform="translate(290, 80)">
+    <circle cx="35" cy="35" r="26" fill="#ffffff" fill-opacity="0.2" stroke="#f472b6" stroke-width="2"/>
+    <text x="35" y="44" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="24" font-weight="900" fill="#fef08a" text-anchor="middle">₹</text>
+  </g>
+
+  <!-- Modern Overlay Badge -->
+  <rect x="20" y="20" width="160" height="28" rx="14" fill="#500724" fill-opacity="0.85" stroke="#f472b6" stroke-width="1.2"/>
+  <text x="32" y="38" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#fbcfe8" letter-spacing="0.5">🌸 MAHILA &amp; BAL VIKAS</text>
+</svg>

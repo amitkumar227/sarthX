@@ -3657,6 +3657,10 @@ const SCHEMES_DATABASE = [
         detailedDescription: "Highest old age monthly pension in North India, automated automatically through Parivar Pehchan Patra (PPP) without manual application once citizen crosses 60 years.",
         benefit: "₹3,000 / Month Direct DBT Pension",
         benefitType: "Automatic Monthly Old Age Pension",
+        eligibilityCriteria: { minAge: 60, maxAge: 100, gender: "all", occupations: ["all"], caste: ["all"], maxIncome: 300000, ruralUrban: "all", landRequired: false, disabilityRequired: false },
+        eligibilitySummary: "Haryana domicile residents aged 60 or above with annual family income up to ₹3,00,000.",
+        documentsRequired: ["Aadhaar Card", "Parivar Pehchan Patra (PPP)", "Bank Passbook (DBT Linked)", "Age Proof / Voter ID"],
+        applicationProcess: "Automatic proactive enrollment via Parivar Pehchan Patra (PPP) data matching or apply at Saral Haryana portal.",
         officialUrl: "https://socialjusticehry.gov.in/",
         directApplyUrl: "https://pension.socialjusticehry.gov.in/",
         tags: ["haryana", "old age samman", "3000 pension", "parivar pehchan patra", "automatic dbt"]
@@ -4158,15 +4162,15 @@ const SCHEMES_METADATA = {
     version: "2.1.0",
     lastUpdated: "2026-09-08",
     categories: [
-        { id: "agriculture", name: "Agriculture & Rural", icon: "ri-plant-line", count: SCHEMES_DATABASE.filter(s => s.category === "agriculture").length },
-        { id: "students", name: "Education & Learning", icon: "ri-graduation-cap-line", count: SCHEMES_DATABASE.filter(s => s.category === "students").length },
-        { id: "financial", name: "Banking & Financial Inclusion", icon: "ri-bank-line", count: SCHEMES_DATABASE.filter(s => s.category === "financial").length },
-        { id: "health", name: "Health & Wellness", icon: "ri-heart-pulse-line", count: SCHEMES_DATABASE.filter(s => s.category === "health").length },
-        { id: "housing", name: "Housing & Shelter", icon: "ri-home-4-line", count: SCHEMES_DATABASE.filter(s => s.category === "housing").length },
-        { id: "women", name: "Women & Child Welfare", icon: "ri-women-line", count: SCHEMES_DATABASE.filter(s => s.category === "women").length },
-        { id: "skills", name: "Skills & Employment", icon: "ri-briefcase-line", count: SCHEMES_DATABASE.filter(s => s.category === "skills").length },
-        { id: "social", name: "Social Welfare & Empowerment", icon: "ri-user-heart-line", count: SCHEMES_DATABASE.filter(s => s.category === "social").length },
-        { id: "business", name: "Business, Startups & MSME", icon: "ri-store-2-line", count: SCHEMES_DATABASE.filter(s => s.category === "business").length }
+        { id: "agriculture", name: "Agriculture & Rural", icon: "fa-wheat-awn", gradient: "linear-gradient(135deg, #064e3b 0%, #059669 100%)", color: "#059669", count: SCHEMES_DATABASE.filter(s => s.category === "agriculture").length },
+        { id: "students", name: "Education & Learning", icon: "fa-graduation-cap", gradient: "linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)", color: "#2563eb", count: SCHEMES_DATABASE.filter(s => s.category === "students").length },
+        { id: "financial", name: "Banking & Financial Inclusion", icon: "fa-building-columns", gradient: "linear-gradient(135deg, #78350f 0%, #d97706 100%)", color: "#d97706", count: SCHEMES_DATABASE.filter(s => s.category === "financial").length },
+        { id: "health", name: "Healthcare & Wellness", icon: "fa-heart-pulse", gradient: "linear-gradient(135deg, #881337 0%, #e11d48 100%)", color: "#e11d48", count: SCHEMES_DATABASE.filter(s => s.category === "health").length },
+        { id: "housing", name: "Housing & Shelter", icon: "fa-house-chimney", gradient: "linear-gradient(135deg, #581c87 0%, #9333ea 100%)", color: "#9333ea", count: SCHEMES_DATABASE.filter(s => s.category === "housing").length },
+        { id: "women", name: "Women & Child Welfare", icon: "fa-person-dress", gradient: "linear-gradient(135deg, #831843 0%, #db2777 100%)", color: "#db2777", count: SCHEMES_DATABASE.filter(s => s.category === "women").length },
+        { id: "skills", name: "Skills & Employment", icon: "fa-gears", gradient: "linear-gradient(135deg, #134e4a 0%, #0d9488 100%)", color: "#0d9488", count: SCHEMES_DATABASE.filter(s => s.category === "skills").length },
+        { id: "social", name: "Social Welfare & Empowerment", icon: "fa-hands-holding-child", gradient: "linear-gradient(135deg, #312e81 0%, #4f46e5 100%)", color: "#4f46e5", count: SCHEMES_DATABASE.filter(s => s.category === "social").length },
+        { id: "business", name: "Business, Startups & MSME", icon: "fa-briefcase", gradient: "linear-gradient(135deg, #713f12 0%, #ca8a04 100%)", color: "#ca8a04", count: SCHEMES_DATABASE.filter(s => s.category === "business").length }
     ],
     states: [
         "All India", "Uttar Pradesh", "Maharashtra", "Bihar", "West Bengal",
